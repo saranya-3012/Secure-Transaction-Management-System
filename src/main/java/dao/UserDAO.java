@@ -28,7 +28,7 @@ public class UserDAO {
     }
 
     
-    // User Login 
+    // User Login (Authentication) 
     public User login(String email) throws Exception {
 
         String sql = "SELECT * FROM users WHERE email=?";
@@ -73,5 +73,49 @@ public class UserDAO {
         ps.executeBatch();
         conn.commit();
     }
+    
+    
+    public void updateStatus(int userId, String status) throws Exception {
+
+        String sql = "UPDATE users SET status=? WHERE id=?";
+        Connection con = DBUtil.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+
+        ps.setString(1, status);
+        ps.setInt(2, userId);
+
+        ps.executeUpdate();
+        con.close();
+    }
+    
+    
+    
+    public User getUserById(int id) throws Exception {
+
+        String sql = "SELECT * FROM users WHERE id=?";
+        Connection con = DBUtil.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+
+        ps.setInt(1, id);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            User u = new User();
+            u.setId(rs.getInt("id"));
+            u.setName(rs.getString("name"));
+            u.setEmail(rs.getString("email"));
+            u.setBalance(rs.getDouble("balance"));
+            u.setRole(rs.getString("role"));
+            u.setStatus(rs.getString("status"));
+            con.close();
+            return u;
+        }
+
+        con.close();
+        return null;
+    }
+
+
 
 }

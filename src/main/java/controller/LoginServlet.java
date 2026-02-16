@@ -1,41 +1,34 @@
-package controller;
+package com.bank.controller;
 
-import dao.UserDAO;
-import model.User;
-import util.Passwordhash;
+import com.bank.dao.UserDAO;
+import com.bank.model.User;
+import com.bank.util.PasswordUtil;
 
-import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.IOException;
 
 public class LoginServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+
+        String email = req.getParameter("email");
+        String pwd = req.getParameter("password");
 
         try {
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            String hashedPwd = PasswordUtil.hash(pwd);
+            User user = new UserDAO().authenticate(email, hashedPwd);
 
-            UserDAO dao = new UserDAO();
-            User user = dao.login(email);
-
-            if (user != null &&
-                user.getpassword().equals(Passwordhash.hashPassword(password))) {
-
-                HttpSession session = request.getSession();
-                session.setAttribute("userId", user.getid());
-                session.setAttribute("role", user.getrole());
-
-                response.sendRedirect("dashboard.jsp");
-            } 
-            else {
-                response.getWriter().println("Invalid credentials");
+            if (user != null) {
+                HttpSession session = req.getSession();
+                session.setAttribute("userId", user.getId());
+                session.setAttribute("role", user.getRole());
+                res.getWriter().write("Login Success");
+            } else {
+                res.getWriter().write("Invalid Credentials");
             }
 
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            res.getWriter().write("Login Error: " + e.getMessage());
         }
     }
 }
