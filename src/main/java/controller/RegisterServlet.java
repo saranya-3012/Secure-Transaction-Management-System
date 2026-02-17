@@ -5,9 +5,11 @@ import model.User;
 import util.*;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 
+@WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -22,42 +24,21 @@ public class RegisterServlet extends HttpServlet {
             String role = req.getParameter("role");  // ADMIN or USER
             
 
-            // Input Validation            
-            if(!Validation.ValidName(name)) {
-                res.getWriter().write("Name is required");
-                return;
-            }
+            // Input Validation             
+            Validation.isValidUsername(name);
+            Validation.isValidEmail(email);              
+            Validation.isValidPassword(password);
             
-            if(!Validation.ValidEmail(email)) {
-                res.getWriter().write("Invalid Email");
-                return;
-            }
-            
-            if(!Validation.ValidPass(password)) {
-            	res.getWriter().write("Password must be at least 8 characters");
-                return;
-            }    
-            
-            if(!Validation.Validrole(role)) {
-            	res.getWriter().write("");
-                return;
-            } 
-
-            // Hash Password
-            String hashedPassword = Passwordhash.hashPassword(password);
-
             // Set User Object
             User user = new User();
             user.setName(name);
             user.setEmail(email);
-            user.setpassword(hashedPassword);
-            user.setrole(role);
+            user.setpassword(password);
 
             // Call DAO
             UserDAO dao = new UserDAO();
             dao.register(user);
 
-            // Success Response
             res.getWriter().write("User Registered Successfully");
 
         } 
