@@ -1,48 +1,41 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Transaction {
-    private String user_id;
-    private String role;
-    private String name;
-    private String password;
+    private long acc_id;
+    private String type;
+    private BigDecimal amount;
 
     // Constructors
     public Transaction() {}
 
-    public Transaction(String name, String password) {
-        this.name = name;
-        this.password = password;
+    public Transaction(long acc_id, String type, BigDecimal amount) {
+        this.acc_id = acc_id;
+        this.type = type;
+        this.amount = amount;
     }
 
     // Getters & Setters
-    public String getuser_id() { 
-    	return user_id; 
+    public long getacc_id() { 
+    	return acc_id; 
     }
-    public void setid(String user_id) { 
-    	this.user_id = user_id; 
+    public void setacc_id(long acc_id) { 
+    	this.acc_id = acc_id; 
     }
 
     
-    public String getName() { 
-    	return name;
+    public String gettype() { 
+    	return type;
     }
-    public void setName(String name) { 
-    	this.name = name; 
-    }
-    
-    
-    public String getpassword() { 
-        return password; 
-    }
-    public void setpassword(String password) { 
-    	this.password = password;
+    public void settype(String type) { 
+    	this.type = type; 
     }
 
-
-    public String getrole() { 
-    	return role; 
+    public BigDecimal getamount() { 
+    	return amount; 
     }
-    public void setrole(String role) { 
-    	this.role = role; 
+    public void setamount(BigDecimal amount) { 
+    	this.amount = amount; 
     }
 }

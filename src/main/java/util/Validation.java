@@ -32,8 +32,7 @@ public class Validation {
 	    // Email Validation
 	    public static boolean isValidEmail(String email) {
 	        return email != null && Pattern.matches(EMAIL, email);
-	    }
-   
+	    }   
 
 	    // Phone Validation
 	    public static boolean isValidPhone(String phone) {
@@ -49,6 +48,4 @@ public class Validation {
 	    public static boolean isValidAmount(String amount) {
 	    	return amount != null && Pattern.matches(AMOUNT, amount);
 	    }
-	}
-
-   
+	}  

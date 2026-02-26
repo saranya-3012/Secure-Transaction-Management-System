@@ -1,26 +1,25 @@
 package dao;
 
-import model.Customer;
+import model.Transaction;
 import util.DBConnection;
 import java.util.*;
-
+import java.rmi.AccessException;
 import java.sql.*;
 
 public class TransactionDAO {
 
-    public void register(Customer user) throws Exception {
+    public void newTransaction(Transaction user) throws Exception {
     	
-    // Registration
+    // Insert New Transaction Detail
 
-        String sql = "UPDATE Customer SET Type = ? WHERE C";
+        String sql = "INSERT INTO Transaction (Account_ID, Type, Amount) VALUES (?, ?, ?)";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getphone());
-            ps.setString(4, user.getpassword());
+        	ps.setLong(1, user.getacc_id());
+            ps.setString(2, user.gettype());
+            ps.setBigDecimal(3, user.getamount());
 
             ps.executeUpdate();
         }
@@ -31,31 +30,47 @@ public class TransactionDAO {
     
 
     
-   // Customer Login (Authentication) 
+   // View the Transaction History by Account ID 
     
-    public Customer login(String email, String password) throws Exception {
+    public List<Transaction> getTransactions(long accountId, int page, int size) throws AccessException {
+    	
+    	int offset = (page - 1) * size;
 
-        String sql = "SELECT * FROM Customer WHERE Email=? AND Password=?";
+        String sql = """
+        		   SELECT Transaction_id, Account_id, Type, amount, Date, Amount
+        		    FROM Transaction  
+        		    WHERE Account_id = ? 
+        		       ORDER BY txn_date 
+        		       DESC LIMIT ? OFFSET ?""";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        List<Transaction> transactions = new ArrayList<>();
 
-            ps.setString(1, email);
-            ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
+		try (Connection con = DBConnection.getConnection(); 
+			PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (rs.next()) {
-                Customer cust = new Customer();
-                cust.setid(rs.getString("cust_id"));
-                cust.setName(rs.getString("Name"));
-                cust.setrole(rs.getString("role"));
-                cust.setEmail(rs.getString("email"));
-                cust.setphone(rs.getString("phone"));
-                return cust;
-            }
-        }
-        return null;
-    }
+			ps.setLong(1, accountId);
+			ps.setInt(2, size);
+			ps.setInt(3, offset);
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+               Transaction txn = new Transaction();
+			
+				txn.setacc_id(rs.getInt("acc_id"));
+				txn.settype(rs.getString("type"));
+				txn.setamount(rs.getBigDecimal("amount"));
+
+				transactions.add(txn);
+
+		    }
+		}
+		catch (Exception e) {
+			throw new AccessException("Failed to fetch transactions", e);
+		}
+
+		return transactions;
+	}
     
     
 }
