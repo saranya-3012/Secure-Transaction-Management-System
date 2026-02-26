@@ -3,6 +3,7 @@ package dao;
 import model.Transaction;
 import util.DBConnection;
 import java.util.*;
+import java.math.BigDecimal;
 import java.rmi.AccessException;
 import java.sql.*;
 
@@ -71,6 +72,56 @@ public class TransactionDAO {
 
 		return transactions;
 	}
+    
+    
+    
+ // Batch Insertions with Commit & Rollback
+    public void saveBatch(List<BigDecimal> amounts, int userId) throws Exception {
+
+        String sql = "INSERT INTO Transactions(cust_id, amount, type) VALUES(?,?,?)";
+
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = DBConnection.getConnection();
+
+            // 1. Disable auto-commit
+            con.setAutoCommit(false);
+
+            ps = con.prepareStatement(sql);
+
+            for (BigDecimal amt : amounts) {
+                ps.setInt(1, userId);
+                ps.setBigDecimal(2, amt);
+                ps.setString(3, "CREDIT");
+                ps.addBatch();
+            }
+
+            // 2. Execute batch
+            ps.executeBatch();
+
+            // 3. Commit if everything successful
+            con.commit();
+            System.out.println("Batch inserted successfully!");
+
+        } catch (Exception e) {
+
+            // 4. Rollback if any error occurs
+            if (con != null) {
+                con.rollback();
+                System.out.println("Transaction rolled back!");
+            }
+            throw e;
+
+        } finally {
+            if (ps != null) ps.close();
+            if (con != null) {
+                con.setAutoCommit(true); // Reset back
+                con.close();
+            }
+        }
+    }
     
     
 }

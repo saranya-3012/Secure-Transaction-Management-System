@@ -4,17 +4,14 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.bank</groupId>
-    <artifactId>Banking</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>com.stm</groupId>
+    <artifactId>secure-transaction</artifactId>
+    <version>1.0</version>
     <packaging>war</packaging>
-
-    <name>Banking</name>
 
     <dependencies>
 
-        <!-- Servlet API (Tomcat 9 uses javax) -->
+        <!-- Servlet API (javax) -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -22,17 +19,27 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- MySQL Connector -->
+        <!-- PostgreSQL -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.1</version>
         </dependency>
 
-    </dependencies>
+        <!-- JUnit -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+    <groupId>com.zaxxer</groupId>
+    <artifactId>HikariCP</artifactId>
+    <version>5.1.0</version>
+</dependency>
 
-    <build>
-        <finalName>Banking</finalName>
-    </build>
+    </dependencies>
 
 </project>

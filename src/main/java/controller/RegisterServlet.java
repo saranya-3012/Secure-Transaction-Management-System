@@ -22,22 +22,18 @@ public class RegisterServlet extends HttpServlet {
             String email = req.getParameter("email");
             String phone = req.getParameter("phone");
             String password = req.getParameter("password");
-
-            // Input Validation             
-            Validation.isValidUsername(name);
-            Validation.isValidEmail(email);              
-            Validation.isValidPassword(password);
-            Validation.isValidPhone(phone);
             
             // Set User Object
-            Customer user = new Customer();
-            user.setName(name);
-            user.setEmail(email);
-            user.setpassword(password);
+            Customer cust = new Customer();
+            cust.setName(name);
+            cust.setEmail(email);
+            cust.setpassword(password);
+            cust.setphone(phone);
+            cust.setrole("USER");
 
             // Call DAO
             CustDAO dao = new CustDAO();
-            dao.register(user);
+            dao.register(cust);
 
             res.getWriter().write("User Registered Successfully");
 

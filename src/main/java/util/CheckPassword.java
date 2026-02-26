@@ -6,15 +6,15 @@ import java.sql.ResultSet;
 
 public class CheckPassword {
 	
-   public static String getPassword(String email) {
+   public static String getPassword(String username) {
     	
         try {
-        	 String sql = "SELECT * FROM Customer WHERE Email=?";
+        	 String sql = "SELECT * FROM Customer WHERE Username=?";
 
              try (Connection con = DBConnection.getConnection();
                   PreparedStatement ps = con.prepareStatement(sql)) {
 
-                 ps.setString(1, email);
+                 ps.setString(1, username);
                  ResultSet rs = ps.executeQuery();
 
                  if (rs.next()) {                    

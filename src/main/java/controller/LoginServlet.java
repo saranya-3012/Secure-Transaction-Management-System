@@ -5,26 +5,32 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import util.PasswordHash;
-import util.CheckPassword;
+import dao.*;
+import util.*;
+import model.*;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String email = request.getParameter("email");
+        String username = request.getParameter("username");
         String password = request.getParameter("password");
 
         try {
 
             String hashpass = PasswordHash.hashPassword(password);
             
-            if (hashpass != null && hashpass.equals(CheckPassword.getPassword(email))) {
+            CustDAO dao = new CustDAO();
+            Customer cust = dao.login(username, password);
+            
+            if (hashpass != null && hashpass.equals(CheckPassword.getPassword(username))) {
 
                 HttpSession session = request.getSession();
-                session.setAttribute("email", email);
-
+                session.setAttribute("cust_id", cust.getcust_id());
+                session.setAttribute("role", cust.getrole());
+                
+                AppLogger.LOGGER.info("User logged in: " + username);
                 response.getWriter().println("Login Success");
 
             } 
@@ -34,7 +40,7 @@ public class LoginServlet extends HttpServlet {
 
         } 
         catch (Exception e) {
-            e.printStackTrace();
+        	response.getWriter().println("Error");
         }
     }
 }
