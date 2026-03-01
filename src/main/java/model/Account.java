@@ -1,60 +1,69 @@
 package model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class Account {
-	private long acc_id;
-    private int cust_id;
-    private String acc_no;
-    private BigDecimal balance;
-    private String name;
 
-    // Constructors
+    private int accountId;
+    private int customerId;
+    private String accountNumber;
+    private BigDecimal balance;
+    private String accountType;
+    private LocalDateTime createdAt;
+
     public Account() {}
 
-    public Account(long acc_id, int cust_id, String acc_no, BigDecimal balance, String name) {
-        this.cust_id = cust_id;
-        this.acc_no = acc_no;
+    public Account(int accountId, int customerId, String accountNumber,
+                   BigDecimal balance, String accountType,
+                   LocalDateTime createdAt) {
+        this.accountId = accountId;
+        this.customerId = customerId;
+        this.accountNumber = accountNumber;
         this.balance = balance;
-        this.acc_id = acc_id;
-        this.name = name;
+        this.accountType = accountType;
+        this.createdAt = createdAt;
     }
 
-    // Getters & Setters
-    public long getacc_id() { 
-    	return acc_id; 
+    public int getAccountId() {
+        return accountId;
     }
-    public void setacc_id(long acc_id) { 
-    	this.acc_id = acc_id; 
-    }
-    
-    public int getcust_id() { 
-    	return cust_id; 
-    }
-    public void setcust_id(int cust_id) { 
-    	this.cust_id = cust_id; 
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
     }
 
-    
-    public BigDecimal getbalance() { 
-    	return balance;
+    public int getCustomerId() {
+        return customerId;
     }
-    public void setbalance(BigDecimal balance) { 
-    	this.balance = balance; 
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
-    
-    public String getacc_no() { 
-        return acc_no; 
+    public String getAccountNumber() {
+        return accountNumber;
     }
-    public void setacc_no(String acc_no) { 
-    	this.acc_no = acc_no;
-    }  
-    
-    public String getName() { 
-    	return name;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
-    public void setName(String name) { 
-    	this.name = name; 
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

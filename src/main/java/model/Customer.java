@@ -1,68 +1,76 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class Customer {
-    private String cust_id;
-    private String role;
-    private String name;
+
+    private int customerId;
+    private String username;
+    private String password;
+    private String fullName;
     private String email;
     private String phone;
-    private String password;
+    private LocalDateTime createdAt;
 
-    // Constructors
     public Customer() {}
 
-    public Customer(String name, String email, String phone, String password) {
-        this.name = name;
+    public Customer(int customerId, String username, String password, String fullName, String email, String phone, LocalDateTime createdAt) {
+        this.customerId = customerId;
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
+        this.createdAt = createdAt;
+    }
+
+    public int getCustomerId() {
+
+        return customerId;
+    }
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    // Getters & Setters
-    public String getcust_id() { 
-    	return cust_id; 
+    public String getFullName() {
+        return fullName;
     }
-    public void setid(String cust_id) { 
-    	this.cust_id = cust_id; 
-    }
-
-    
-    public String getName() { 
-    	return name;
-    }
-    public void setName(String name) { 
-    	this.name = name; 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    
-    public String getEmail() { 
-        return email; 
+    public String getEmail() {
+        return email;
     }
-    public void setEmail(String email) { 
-    	this.email = email;
-    }
-
-    
-    public String getphone() { 
-    	return phone; 
-    }
-    public void setphone(String phone) { 
-    	this.phone = phone; 
-    }
-    
-    
-    public String getpassword() { 
-        return password; 
-    }
-    public void setpassword(String password) { 
-    	this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-
-    public String getrole() { 
-    	return role; 
+    public String getPhone() {
+        return phone;
     }
-    public void setrole(String role) { 
-    	this.role = role; 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

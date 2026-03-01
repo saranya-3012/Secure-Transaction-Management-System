@@ -1,13 +1,12 @@
 package service;
 
-import model.*;
-import dao.*;
+import dao.TransactionDAO;
 
 public class TransactionService {
-	
-	// Create New Account
-	public Account createNewAccount(String accountNumber) throws Exception {
-		return TransactionDAO.getAccountByAccountNumber(accountNumber);
-	}
 
+	private final TransactionDAO transactionDAO = new TransactionDAO();
+
+	public void transfer(int fromAccount, int toAccount, double amount) throws Exception {
+		transactionDAO.transferMoney(fromAccount, toAccount, amount);
+	}
 }

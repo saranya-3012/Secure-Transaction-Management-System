@@ -2,7 +2,7 @@ package util;
 
 import java.util.regex.Pattern;
 
-public class Validation {
+public final class Validation {
 	
 	   // Name Pattern
 	   private static final String USERNAME = "^[a-zA-Z0-9_]{3,20}$";

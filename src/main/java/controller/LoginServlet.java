@@ -1,46 +1,75 @@
 package controller;
 
-import java.io.IOException;
+import dao.CustDAO;
+import model.Admin;
+import model.Customer;
+import util.PasswordHash;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
-import dao.*;
-import util.*;
-import model.*;
+import java.io.IOException;
+import java.util.Optional;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private final AdminDAO adminDAO = new AdminDAO();
+    private final CustDAO customerDAO = new CustDAO();
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String role = req.getParameter("role");
+
+        HttpSession session = req.getSession();
 
         try {
+            if ("admin".equalsIgnoreCase(role)) {
 
-            String hashpass = PasswordHash.hashPassword(password);
-            
-            CustDAO dao = new CustDAO();
-            Customer cust = dao.login(username, password);
-            
-            if (hashpass != null && hashpass.equals(CheckPassword.getPassword(username))) {
+                Optional<Admin> admin = adminDAO.findByUsername(username);
 
-                HttpSession session = request.getSession();
-                session.setAttribute("cust_id", cust.getcust_id());
-                session.setAttribute("role", cust.getrole());
-                
-                AppLogger.LOGGER.info("User logged in: " + username);
-                response.getWriter().println("Login Success");
+                if (admin.isPresent() && admin.get().getPassword().equals(password)) {
 
-            } 
+                    session.setAttribute("userId", admin.get().getAdminId());
+                    session.setAttribute("role", "ADMIN");
+                    resp.getWriter().println("Admin Login Successful");
+                }
+                else {
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Admin Credentials");
+                }
+
+            }
             else {
-                response.getWriter().println("Invalid Credentials");
+
+                Optional<Customer> customer = customerDAO.findByUsername(username);
+
+                if (customer.isPresent()) {
+
+                    String hashedpassword = PasswordHash.hashPassword(password);
+
+                    if (customer.get().getPassword().equals(hashedpassword)) {
+
+                        session.setAttribute("userId", customer.get().getCustomerId());
+                        session.setAttribute("role", "CUSTOMER");
+                        resp.getWriter().println("Customer Login Successful");
+
+                    } else {
+                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                                "Invalid Customer Credentials");
+                    }
+
+                } else {
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                            "Invalid Customer Credentials");
+                }
             }
 
-        } 
+        }
         catch (Exception e) {
-        	response.getWriter().println("Error");
+            throw new ServletException(e);
         }
     }
 }
