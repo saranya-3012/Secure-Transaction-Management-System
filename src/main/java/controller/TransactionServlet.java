@@ -27,13 +27,6 @@ public class TransactionServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Transaction Failed");
         }
     }
-}
-
-
-@WebServlet("/customer/transactions")
-public class TransactionServlet extends HttpServlet {
-
-    private TransactionDAO transactionDAO = new TransactionDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -59,5 +52,6 @@ public class TransactionServlet extends HttpServlet {
         } catch (Exception e) {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }
+}
+
 }
