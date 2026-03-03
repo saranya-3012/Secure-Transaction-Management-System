@@ -6,7 +6,7 @@ import util.DBConnection;
 import java.sql.*;
 import java.util.Optional;
 
-public class CustomerDAO {
+public class CustDAO {
 
     // Registration
     public void register(Customer customer) throws Exception {
