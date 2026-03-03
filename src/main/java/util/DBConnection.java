@@ -1,27 +1,44 @@
 package util;
 
-import java.sql.*;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 public class DBConnection {
-	
-	// Database Connection
-	private static Connection connection;
 
-    public static Connection getConnection() {
-    	
-    	if (connection == null) {
-           try {
-        	          	   
-        	   String url = "jdbc:postgresql://localhost:5432/bluescope";
-        	   String username = "postgres";
-        	   String password = "guna";
-              connection = DriverManager.getConnection(url, username, password);
-           } 
-           catch (Exception e) {
-              e.printStackTrace();
-              
-           }
+    private static HikariDataSource dataSource;
+
+    static {
+        try {
+            Properties props = new Properties();
+
+            InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("application.properties");
+
+            props.load(input);
+
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(props.getProperty("db.url"));
+            config.setUsername(props.getProperty("db.username"));
+            config.setPassword(props.getProperty("db.password"));
+
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(2);
+            config.setIdleTimeout(30000);
+            config.setConnectionTimeout(20000);
+
+            dataSource = new HikariDataSource(config);
+
         }
-    	return connection;
+        catch (Exception e) {
+            throw new ExceptionInInitializerError("Database Initialization Failed " + e);
+        }
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }
