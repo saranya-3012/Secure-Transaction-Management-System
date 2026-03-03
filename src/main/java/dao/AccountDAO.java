@@ -1,8 +1,10 @@
 package dao;
 
-import com.digital.model.Account;
-import com.digital.util.DBConnection;
+import model.Account;
+import util.AccountNoGenerator;
+import util.DBConnection;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +13,17 @@ public class AccountDAO {
 
 	// Create a New account
 	public void create(Account account) throws Exception {
-		String sql = "INSERT INTO Accounts(Customer_id,Account_number,Balance,Account_type) VALUES(?,?,?,?)";
+
+		String sql = "INSERT INTO Accounts(account_number, customer_id, balance) VALUES(?,?,?)";
 
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
 
-			ps.setInt(1, account.getCustomerId());
-			ps.setString(2, account.getAccountNumber());
+			String AccountNumber = AccountNoGenerator.generateAccountNumber();
+
+			ps.setString(1, AccountNumber);
+			ps.setInt(2, account.getCustomerId());
 			ps.setBigDecimal(3, account.getBalance());
-			ps.setString(4, account.getAccountType());
 
 			ps.executeUpdate();
 		}
@@ -50,4 +54,25 @@ public class AccountDAO {
 		}
 		return list;
 	}
+
+
+	public BigDecimal findBalance(int accountId) throws Exception {
+
+		List<Account> list = new ArrayList<>();
+		String sql = "SELECT * FROM Accounts WHERE account_id=?";
+
+		try (Connection con = DBConnection.getConnection();
+			 PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, accountId);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getBigDecimal("balance");
+			}
+			else{
+				return null;
+			}
+		}
+    }
 }
