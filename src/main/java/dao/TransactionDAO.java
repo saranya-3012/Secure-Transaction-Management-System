@@ -1,127 +1,157 @@
 package dao;
 
 import model.Transaction;
+import util.AppLogger;
 import util.DBConnection;
-import java.util.*;
+
 import java.math.BigDecimal;
-import java.rmi.AccessException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionDAO {
 
-    public void newTransaction(Transaction user) throws Exception {
-    	
-    // Insert New Transaction Detail
+    // Save the Transaction Detail
+    public void save(Transaction transaction) throws Exception {
 
-        String sql = "INSERT INTO Transaction (Account_ID, Type, Amount) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Transactions(Account_id, Amount, Type, Total_Amount) VALUES(?,?,?,?)";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-        	ps.setLong(1, user.getacc_id());
-            ps.setString(2, user.gettype());
-            ps.setBigDecimal(3, user.getamount());
+            ps.setInt(1, transaction.getAccountId());
+            ps.setBigDecimal(2, transaction.getAmount());
+            ps.setString(3, transaction.getType());
+            ps.setBigDecimal(4, transaction.getTotalAmount());
 
             ps.executeUpdate();
         }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
     }
-    
 
-    
-   // View the Transaction History by Account ID 
-    
-    public List<Transaction> getTransactions(long accountId, int page, int size) throws AccessException {
-    	
-    	int offset = (page - 1) * size;
+    // Find Transaction history by Account ID
+    public List<Transaction> findByAccountId(
+            int accountId,
+            int page,
+            int size) throws Exception {
 
-        String sql = """
-        		   SELECT Transaction_id, Account_id, Type, amount, Date, Amount
-        		    FROM Transaction  
-        		    WHERE Account_id = ? 
-        		       ORDER BY txn_date 
-        		       DESC LIMIT ? OFFSET ?""";
+        List<Transaction> list = new ArrayList<>();
 
-        List<Transaction> transactions = new ArrayList<>();
+        String sql = "SELECT * FROM Transactions " +
+                "WHERE account_id = ? " +
+                "ORDER BY created_at DESC " +
+                "LIMIT ? OFFSET ?";
 
-		try (Connection con = DBConnection.getConnection(); 
-			PreparedStatement ps = con.prepareStatement(sql)) {
+        int offset = (page - 1) * size;
 
-			ps.setLong(1, accountId);
-			ps.setInt(2, size);
-			ps.setInt(3, offset);
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-			ResultSet rs = ps.executeQuery();
+            ps.setInt(1, accountId);
+            ps.setInt(2, size);
+            ps.setInt(3, offset);
 
-			while (rs.next()) {
-               Transaction txn = new Transaction();
-			
-				txn.setacc_id(rs.getInt("acc_id"));
-				txn.settype(rs.getString("type"));
-				txn.setamount(rs.getBigDecimal("amount"));
+            ResultSet rs = ps.executeQuery();
 
-				transactions.add(txn);
+            while (rs.next()) {
+                list.add(new Transaction(
+                        rs.getInt("transaction_id"),
+                        rs.getInt("account_id"),
+                        rs.getBigDecimal("amount"),
+                        rs.getString("type"),
+                        rs.getBigDecimal("total_amount"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                ));
+            }
+        }
 
-		    }
-		}
-		catch (Exception e) {
-			throw new AccessException("Failed to fetch transactions", e);
-		}
+        return list;
+    }
 
-		return transactions;
-	}
-    
-    
-    
- // Batch Insertions with Commit & Rollback
-    public void saveBatch(List<BigDecimal> amounts, int userId) throws Exception {
+    // Transaction Update
+    public void transferMoney(int fromAccountId, int toAccountId, double amount) throws Exception {
 
-        String sql = "INSERT INTO Transactions(cust_id, amount, type) VALUES(?,?,?)";
+        String deductSQL = "UPDATE Accounts SET balance = balance - ? WHERE account_id = ?";
+        String addSQL = "UPDATE Accounts SET balance = balance + ? WHERE account_id = ?";
+        String insertSQL = "INSERT INTO Transactions(account_id, amount, type, total_amount) VALUES(?,?,?,?)";
 
-        Connection con = null;
-        PreparedStatement ps = null;
+        try (Connection con = DBConnection.getConnection()) {
 
-        try {
-            con = DBConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
 
-            // 1. Disable auto-commit
+            AppLogger.LOGGER.info("Transfer started: From " + fromAccountId + " To " + toAccountId);
+            try (
+                    PreparedStatement deductps = con.prepareStatement(deductSQL);
+                    PreparedStatement addps = con.prepareStatement(addSQL);
+                    PreparedStatement insertps = con.prepareStatement(insertSQL)
+            ) {
+
+                // 1️⃣ Deduct from sender
+                deductps.setDouble(1, amount);
+                deductps.setInt(2, fromAccountId);
+                deductps.executeUpdate();
+
+                // 2️⃣ Add to receiver
+                addps.setDouble(1, amount);
+                addps.setInt(2, toAccountId);
+                addps.executeUpdate();
+
+                // 3️⃣ Insert debit record
+                AccountDAO accountdao = new AccountDAO();
+                BigDecimal fromBalance = accountdao.findBalance(fromAccountId);
+                BigDecimal newFromBalance = fromBalance.subtract(BigDecimal.valueOf(amount));
+
+                insertps.setInt(1, fromAccountId);
+                insertps.setDouble(2, amount);
+                insertps.setString(3, "DEBIT");
+                insertps.setBigDecimal(4, newFromBalance);
+                insertps.executeUpdate();
+
+                // 4️⃣ Insert credit record
+                BigDecimal toBalance = accountdao.findBalance(toAccountId);
+                BigDecimal newToBalance = fromBalance.add(BigDecimal.valueOf(amount));
+
+                insertps.setInt(1, toAccountId);
+                insertps.setDouble(2, amount);
+                insertps.setString(3, "CREDIT");
+                insertps.setBigDecimal(4, newToBalance);
+                insertps.executeUpdate();
+
+                con.commit();
+
+                AppLogger.LOGGER.info("Transfer completed successfully");
+            }
+            catch (Exception e) {
+                con.rollback();
+                AppLogger.LOGGER.severe("Transaction failed: " + e.getMessage());
+            }
+            }
+        }
+
+
+    public void saveBatch(List<Transaction> transactions) throws Exception {
+
+        String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount) VALUES (?, ?, ?, ?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
             con.setAutoCommit(false);
 
-            ps = con.prepareStatement(sql);
+            for (Transaction tx : transactions) {
 
-            for (BigDecimal amt : amounts) {
-                ps.setInt(1, userId);
-                ps.setBigDecimal(2, amt);
-                ps.setString(3, "CREDIT");
+                ps.setInt(1, tx.getAccountId());
+                ps.setBigDecimal(2, tx.getAmount());
+                ps.setString(3, tx.getType());
+                ps.setBigDecimal(4, tx.getTotalAmount());
+
                 ps.addBatch();
             }
 
-            // 2. Execute batch
             ps.executeBatch();
-
-            // 3. Commit if everything successful
             con.commit();
-            System.out.println("Batch inserted successfully!");
 
         } catch (Exception e) {
-
-            // 4. Rollback if any error occurs
-            if (con != null) {
-                con.rollback();
-                System.out.println("Transaction rolled back!");
-            }
-            throw e;
-
-        } finally {
-            if (ps != null) ps.close();
-            if (con != null) {
-                con.setAutoCommit(true); // Reset back
-                con.close();
-            }
+            throw new Exception("Batch insert failed", e);
         }
     }
-    
-    
-}
+    }
