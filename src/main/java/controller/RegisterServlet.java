@@ -2,9 +2,11 @@ package controller;
 
 import dao.CustDAO;
 import model.Customer;
-import util.*;
+import util.AppLogger;
+import util.PasswordHash;
+import util.Validation;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
@@ -12,34 +14,38 @@ import java.io.IOException;
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    private final CustDAO customerDAO = new CustDAO();
 
-        res.setContentType("application/json");
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String email = req.getParameter("email");
+        String phone = req.getParameter("phone");
+
+        if (!Validation.isValidUsername(username) || !Validation.isValidPassword(password) ||
+                !Validation.isValidEmail(email) || !Validation.isValidPhone(phone)) {
+
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Input Data");
+            return;
+        }
+
+        String hashedPassword = PasswordHash.hashPassword(password);
+
+        Customer customer = new Customer();
+        customer.setUsername(username);
+        customer.setPassword(hashedPassword);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+
+        AppLogger.LOGGER.info("Register request received");
         try {
-            // Get parameters from Postman
-            String name = req.getParameter("name");
-            String email = req.getParameter("email");
-            String phone = req.getParameter("phone");
-            String password = req.getParameter("password");
-            
-            // Set User Object
-            Customer cust = new Customer();
-            cust.setName(name);
-            cust.setEmail(email);
-            cust.setpassword(password);
-            cust.setphone(phone);
-            cust.setrole("USER");
-
-            // Call DAO
-            CustDAO dao = new CustDAO();
-            dao.register(cust);
-
-            res.getWriter().write("User Registered Successfully");
-
-        } 
+            customerDAO.register(customer);
+            AppLogger.LOGGER.info("Customer registered successfully");
+        }
         catch (Exception e) {
-            res.getWriter().write(e.getMessage());
+            AppLogger.LOGGER.severe("Error while registering customer: " + e.getMessage());
         }
     }
 }
