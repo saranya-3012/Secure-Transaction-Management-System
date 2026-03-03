@@ -15,32 +15,35 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = (HttpServletResponse) response;
+        HttpServletResponse resp = (HttpServletResponse) response;
 
-        String uri = req.getRequestURI();
+        String path = req.getRequestURI();
+        HttpSession session = req.getSession(false);
 
         // Allow login and register without session
-        if (uri.contains("login") || uri.contains("register")) {
+        if (path.contains("login") || path.contains("register")) {
             chain.doFilter(request, response);
             return;
         }
 
-        HttpSession session = req.getSession(false);
-
-        // If not logged in
-        if (session == null || session.getAttribute("username") == null) {
-            res.getWriter().println("Please Login First");
+        // If no session → block
+        if (session == null || session.getAttribute("role") == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Please login first");
             return;
         }
 
-        // Role check for admin pages
-        if (uri.contains("/admin")) {
-            String role = (String) session.getAttribute("role");
+        String role = (String) session.getAttribute("role");
 
-            if (!"ADMIN".equals(role)) {
-                res.getWriter().println("Access Denied - Admin Only");
-                return;
-            }
+        // Admin-only endpoints
+        if (path.contains("/admin") && !"ADMIN".equals(role)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            return;
+        }
+
+        // Customer-only endpoints
+        if (path.contains("/customer") && !"CUSTOMER".equals(role)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            return;
         }
 
         chain.doFilter(request, response);
