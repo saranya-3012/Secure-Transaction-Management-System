@@ -85,17 +85,17 @@ public class TransactionDAO {
                     PreparedStatement insertps = con.prepareStatement(insertSQL)
             ) {
 
-                // 1️⃣ Deduct from sender
+                //  Deduct from sender
                 deductps.setDouble(1, amount);
                 deductps.setInt(2, fromAccountId);
                 deductps.executeUpdate();
 
-                // 2️⃣ Add to receiver
+                //  Add to receiver
                 addps.setDouble(1, amount);
                 addps.setInt(2, toAccountId);
                 addps.executeUpdate();
 
-                // 3️⃣ Insert debit record
+                //  Insert debit record
                 AccountDAO accountdao = new AccountDAO();
                 BigDecimal fromBalance = accountdao.findBalance(fromAccountId);
                 BigDecimal newFromBalance = fromBalance.subtract(BigDecimal.valueOf(amount));
@@ -106,7 +106,7 @@ public class TransactionDAO {
                 insertps.setBigDecimal(4, newFromBalance);
                 insertps.executeUpdate();
 
-                // 4️⃣ Insert credit record
+                //  Insert credit record
                 BigDecimal toBalance = accountdao.findBalance(toAccountId);
                 BigDecimal newToBalance = fromBalance.add(BigDecimal.valueOf(amount));
 
