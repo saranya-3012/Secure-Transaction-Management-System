@@ -2,9 +2,7 @@ package controller;
 
 import dao.CustDAO;
 import model.Customer;
-import util.AppLogger;
-import util.PasswordHash;
-import util.Validation;
+import util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
