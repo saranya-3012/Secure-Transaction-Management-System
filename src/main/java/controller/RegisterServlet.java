@@ -19,16 +19,27 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        resp.setContentType("text/plain");
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
 
-        if (!Validation.isValidUsername(username) || !Validation.isValidPassword(password) ||
-                !Validation.isValidEmail(email) || !Validation.isValidPhone(phone)) {
+        if (!Validation.isValidUsername(username)) {
+            resp.getWriter().println("Enter valid Username!");
+        }
 
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Input Data");
-            return;
+        if (!Validation.isValidPassword(password)){
+            resp.getWriter().println("Enter valid Password!");
+        }
+
+        if (!Validation.isValidEmail(email)){
+            resp.getWriter().println("Enter valid Email!");
+        }
+
+        if (!Validation.isValidPhone(phone)) {
+            resp.getWriter().println("Enter valid Phone number!");
         }
 
         String hashedPassword = PasswordHash.hashPassword(password);
@@ -38,6 +49,14 @@ public class RegisterServlet extends HttpServlet {
         customer.setPassword(hashedPassword);
         customer.setEmail(email);
         customer.setPhone(phone);
+
+        CustDAO custdao = new CustDAO();
+        try {
+            custdao.register(customer);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         AppLogger.LOGGER.info("Register request received");
         try {
