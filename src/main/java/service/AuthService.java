@@ -9,36 +9,31 @@ import java.util.Optional;
 
 public class AuthService {
 
-    private final AdminDAO adminDAO = new AdminDAO();
-    private final CustDAO custDAO = new CustDAO();
+    private static final AdminDAO adminDAO = new AdminDAO();
+    private static final CustDAO custDAO = new CustDAO();
+    private static String enteredpassword;
 
-    public Optional<Admin> loginAdmin(String username, String password) throws Exception {
+    public static String loginAdmin(String username, String password) throws Exception {
 
         Optional<Admin> admin = adminDAO.findByUsername(username);
 
-        if (admin.isPresent()) {
-            String hashed = PasswordHash.hashPassword(password);
+        String storedPassword = PasswordHash.hashPassword(enteredpassword);
 
-            if (admin.get().getPassword().equals(hashed)) {
-                return admin;
-            }
+        if (admin.isPresent() && storedPassword.equals(enteredpassword)){
+            return "Admin login Successfully!";
         }
-
-        return Optional.empty();
+        return "Not login";
     }
 
-    public Optional<Customer> loginCustomer(String username, String password) throws Exception {
+    public static String loginCustomer(String username, String password) throws Exception {
 
         Optional<Customer> customer = custDAO.findByUsername(username);
 
-        if (customer.isPresent()) {
-            String hashed = PasswordHash.hashPassword(password);
+        String storedPassword = PasswordHash.hashPassword(enteredpassword);
 
-            if (customer.get().getPassword().equals(hashed)) {
-                return customer;
-            }
+        if (customer.isPresent() && storedPassword.equals(enteredpassword)) {
+            return "Admin login Successfully!";
         }
-
-        return Optional.empty();
+        return "Not login";
     }
 }
