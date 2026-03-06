@@ -17,7 +17,7 @@ import java.util.Optional;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         resp.setContentType("text/plain");
 
@@ -29,68 +29,51 @@ public class LoginServlet extends HttpServlet {
             resp.getWriter().println("Enter valid Username!");
         }
 
-        if (!Validation.isValidPassword(password)){
+        if (!Validation.isValidPassword(password)) {
             resp.getWriter().println("Enter valid Password!");
         }
 
-        HttpSession session = req.getSession();
-
         try {
-            private final AdminDAO adminDAO = new AdminDAO();
-            private final CustDAO customerDAO = new CustDAO();
-            private static final AuthService authService = new AuthService();
-            
-            if ("admin".equalsIgnoreCase(role)) {
-                authService.loginAdmin(username, password);
-            }
-            else if ("customer".equalsIgnoreCase(role)) {
-                authService.loginCustomer(username, password);
-            }
-            else if (role.isEmpty()) {
 
-                Optional<Admin> admin = authService.loginAdmin(username, password);
-                if (admin.isPresent()) {
-                    session.setAttribute("userId", admin.get().getAdminId());
+            if ("admin".equalsIgnoreCase(role)) {
+                AuthService.loginAdmin(username, password);
+
+                AdminDAO adminDAO = new AdminDAO();
+                Optional<Admin> getAdminData = adminDAO.findByUsername(username);
+                if (getAdminData.isPresent()) {
+
+                    HttpSession session = req.getSession(true);
+                    session.setAttribute("userId", getAdminData.get().getAdminId());
                     session.setAttribute("role", "ADMIN");
-                    resp.getWriter().println("Admin Login Successful");
                     return;
                 }
+            }
 
-                    session.setAttribute("userId", admin.get().getAdminId());
-                    session.setAttribute("role", "ADMIN");
-                    resp.getWriter().println("Admin Login Successful");
-                }
-                else {
-                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Admin Credentials");
-                }
+            else if ("customer".equalsIgnoreCase(role)) {
+                AuthService.loginCustomer(username, password);
 
-            } catch (Exception ex) {
+                CustDAO customerDAO = new CustDAO();
+                Optional<Customer> getCustomerData = customerDAO.findByUsername(username);
+                if (getCustomerData.isPresent()) {
+
+                    HttpSession session = req.getSession(true);
+                    session.setAttribute("userId", getCustomerData.get().getCustomerId());
+                    session.setAttribute("role", "CUSTOMER");
+                    return;
+                }
+            }
+
+            else if (role.isEmpty()) {
+                resp.getWriter().println("Role must be either 'admin' or 'customer'");
+            }
+
+            else {
+                resp.getWriter().println("Invalid credentials");
+            }
+
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-            else if ("customer".equalsIgnoreCase(role)) {
 
-                Optional<Customer> customer = customerDAO.findByUsername(username);
-
-                if (customer.isPresent()) {
-
-                    session.setAttribute("userId", customer.get().getCustomerId());
-                    session.setAttribute("role", "CUSTOMER");
-                    resp.getWriter().println("Customer Login Successful");
-                }
-                else {
-                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                            "Invalid Customer Credentials");
-                }
-            }
-            else {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                        "Role must be either 'admin' or 'customer'");
-            }
-
-
-        }
-        catch (Exception e) {
-            throw new ServletException(e);
-        }
     }
 }
