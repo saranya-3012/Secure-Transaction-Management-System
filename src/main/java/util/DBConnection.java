@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public class DBConnection {
 
-    private static HikariDataSource dataSource;
+    private static final HikariDataSource dataSource;
 
     static {
         try {
@@ -24,11 +24,12 @@ public class DBConnection {
             config.setJdbcUrl(props.getProperty("db.url"));
             config.setUsername(props.getProperty("db.username"));
             config.setPassword(props.getProperty("db.password"));
+            config.setDriverClassName(props.getProperty("db.driver"));
 
-            config.setMaximumPoolSize(10);
-            config.setMinimumIdle(2);
-            config.setIdleTimeout(30000);
-            config.setConnectionTimeout(20000);
+            config.setMaximumPoolSize(Integer.parseInt(props.getProperty("hikari.maximumPoolSize")));
+            config.setMinimumIdle(Integer.parseInt(props.getProperty("hikari.minimumIdle")));
+            config.setIdleTimeout(Integer.parseInt(props.getProperty("hikari.idleTimeout")));
+            config.setConnectionTimeout(Integer.parseInt(props.getProperty("hikari.connectionTimeout")));
 
             dataSource = new HikariDataSource(config);
 
