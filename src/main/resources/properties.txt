@@ -1,9 +1,10 @@
-changeLogFile=src/main/resources/changelog/db.changelog-master.xml
-url=jdbc:mysql://localhost:3306/schemes
+# MYSQL Configuration
+url=jdbc:mysql://localhost:3306/Bluescope
 username=root
-password=200303
+password=guna
 driver=com.mysql.cj.jdbc.Driver
 
+# HikariCP Configuration
 Hikari.maximumPool=10
 Hikari.minimumIdle=2
 Hikari.idletimeout=3000
