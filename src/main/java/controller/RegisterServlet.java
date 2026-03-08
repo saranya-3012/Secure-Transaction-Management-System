@@ -1,8 +1,9 @@
 package controller;
 
 import dao.CustDAO;
-import model.Customer;
-import util.*;
+import util.AppLogger;
+import util.PasswordHash;
+import util.Validation;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,8 +13,6 @@ import java.io.IOException;
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
-    private final CustDAO customerDAO = new CustDAO();
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -21,6 +20,7 @@ public class RegisterServlet extends HttpServlet {
 
         String username = req.getParameter("username");
         String password = req.getParameter("password");
+        String name = req.getParameter("name");
         String email = req.getParameter("email");
         String phone = req.getParameter("phone");
 
@@ -40,26 +40,22 @@ public class RegisterServlet extends HttpServlet {
             resp.getWriter().println("Enter valid Phone number!");
         }
 
-        String hashedPassword = PasswordHash.hashPassword(password);
-
-        Customer customer = new Customer();
-        customer.setUsername(username);
-        customer.setPassword(hashedPassword);
-        customer.setEmail(email);
-        customer.setPhone(phone);
-
-        CustDAO custdao = new CustDAO();
-        try {
-            custdao.register(customer);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         AppLogger.LOGGER.info("Register request received");
+
         try {
-            customerDAO.register(customer);
-            AppLogger.LOGGER.info("Customer registered successfully");
+
+            String hashedPassword = PasswordHash.hashPassword(password);
+
+            CustDAO custdao = new CustDAO();
+            custdao.register(username, hashedPassword, name, email, phone);
+            resp.getWriter().println(name + " registered successfully");
+            AppLogger.LOGGER.info(name + " registered successfully");
+        }
+        catch (ServletException e) {
+            throw new ServletException(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
         catch (Exception e) {
             AppLogger.LOGGER.severe("Error while registering customer: " + e.getMessage());
