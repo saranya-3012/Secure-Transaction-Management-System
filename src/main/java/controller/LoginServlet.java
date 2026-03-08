@@ -5,9 +5,9 @@ import dao.CustDAO;
 import model.Admin;
 import model.Customer;
 import service.AuthService;
+import util.AppLogger;
 import util.Validation;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         resp.setContentType("text/plain");
 
@@ -34,32 +34,37 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-
             if ("admin".equalsIgnoreCase(role)) {
-                AuthService.loginAdmin(username, password);
+                String login = AuthService.loginAdmin(username, password);
 
+                resp.getWriter().println(login);
                 AdminDAO adminDAO = new AdminDAO();
                 Optional<Admin> getAdminData = adminDAO.findByUsername(username);
+
                 if (getAdminData.isPresent()) {
 
+                    AppLogger.LOGGER.info(username + " logged ");
                     HttpSession session = req.getSession(true);
                     session.setAttribute("userId", getAdminData.get().getAdminId());
                     session.setAttribute("role", "ADMIN");
-                    return;
+
                 }
             }
 
             else if ("customer".equalsIgnoreCase(role)) {
-                AuthService.loginCustomer(username, password);
+                String login = AuthService.loginCustomer(username, password);
 
+                resp.getWriter().println(login);
                 CustDAO customerDAO = new CustDAO();
                 Optional<Customer> getCustomerData = customerDAO.findByUsername(username);
+
                 if (getCustomerData.isPresent()) {
 
+                    AppLogger.LOGGER.info(username + " logged ");
                     HttpSession session = req.getSession(true);
                     session.setAttribute("userId", getCustomerData.get().getCustomerId());
                     session.setAttribute("role", "CUSTOMER");
-                    return;
+
                 }
             }
 
