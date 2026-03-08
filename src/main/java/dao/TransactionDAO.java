@@ -11,44 +11,81 @@ import java.util.List;
 
 public class TransactionDAO {
 
-    // Save the Transaction Detail
-    public void save(Transaction transaction) throws Exception {
+    // Transaction Update
+    public void transferMoney(int fromAccountId, int toAccountId, double amount) throws Exception {
 
-        String sql = "INSERT INTO Transactions(Account_id, Amount, Type, Total_Amount) VALUES(?,?,?,?)";
+        String senderSQL = "UPDATE Accounts SET balance = balance - ? WHERE account_id = ?";
+        String receiverSQL = "UPDATE Accounts SET balance = balance + ? WHERE account_id = ?";
+        String transactionSQL = "INSERT INTO Transactions(account_id, amount, type, total_amount) " +
+                      "VALUES(?,?,?,?)";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection()) {
 
-            ps.setInt(1, transaction.getAccountId());
-            ps.setBigDecimal(2, transaction.getAmount());
-            ps.setString(3, transaction.getType());
-            ps.setBigDecimal(4, transaction.getTotalAmount());
+            con.setAutoCommit(false); // Start transaction
 
-            ps.executeUpdate();
+            AppLogger.LOGGER.info("Transfer started: From " + fromAccountId + " To " + toAccountId);
+            try (
+                    PreparedStatement senderps = con.prepareStatement(senderSQL);
+                    PreparedStatement receiverps = con.prepareStatement(receiverSQL);
+                    PreparedStatement transactionps = con.prepareStatement(transactionSQL)
+            ) {
+
+                // 1️⃣ Deduct from sender
+                senderps.setDouble(1, amount);
+                senderps.setInt(2, fromAccountId);
+                senderps.executeUpdate();
+
+                // 2️⃣ Add to receiver
+                receiverps.setDouble(1, amount);
+                receiverps.setInt(2, toAccountId);
+                receiverps.executeUpdate();
+
+                // 3️⃣ Insert debit record
+                AccountDAO accountdao = new AccountDAO();
+                BigDecimal fromBalance = accountdao.findBalance(fromAccountId);
+                BigDecimal newFromBalance = fromBalance.subtract(BigDecimal.valueOf(amount));
+
+                transactionps.setInt(1, fromAccountId);
+                transactionps.setDouble(2, amount);
+                transactionps.setString(3, "DEBIT");
+                transactionps.setBigDecimal(4, newFromBalance);
+                transactionps.executeUpdate();
+
+                // 4️⃣ Insert credit record
+                BigDecimal toBalance = accountdao.findBalance(toAccountId);
+                BigDecimal newToBalance = toBalance.add(BigDecimal.valueOf(amount));
+
+                transactionps.setInt(1, toAccountId);
+                transactionps.setDouble(2, amount);
+                transactionps.setString(3, "CREDIT");
+                transactionps.setBigDecimal(4, newToBalance);
+                transactionps.executeUpdate();
+
+                con.commit();
+
+                AppLogger.LOGGER.info("Transfer completed successfully");
+            }
+            catch (Exception e) {
+                con.rollback();
+                AppLogger.LOGGER.severe("Transaction failed: " + e.getMessage());
+            }
         }
     }
 
     // Find Transaction history by Account ID
-    public List<Transaction> findByAccountId(
-            int accountId,
-            int page,
-            int size) throws Exception {
+    public List<Transaction> findByAccountId(int accountId, int page) throws Exception {
 
         List<Transaction> list = new ArrayList<>();
 
-        String sql = "SELECT * FROM Transactions " +
-                "WHERE account_id = ? " +
-                "ORDER BY created_at DESC " +
-                "LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM Transactions WHERE account_id = ? ORDER BY created_at DESC LIMIT 5 OFFSET ?";
 
-        int offset = (page - 1) * size;
+        int offset = (page - 1) * 5;
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, accountId);
-            ps.setInt(2, size);
-            ps.setInt(3, offset);
+            ps.setInt(2, offset);
 
             ResultSet rs = ps.executeQuery();
 
@@ -66,66 +103,6 @@ public class TransactionDAO {
 
         return list;
     }
-
-    // Transaction Update
-    public void transferMoney(int fromAccountId, int toAccountId, double amount) throws Exception {
-
-        String deductSQL = "UPDATE Accounts SET balance = balance - ? WHERE account_id = ?";
-        String addSQL = "UPDATE Accounts SET balance = balance + ? WHERE account_id = ?";
-        String insertSQL = "INSERT INTO Transactions(account_id, amount, type, total_amount) VALUES(?,?,?,?)";
-
-        try (Connection con = DBConnection.getConnection()) {
-
-            con.setAutoCommit(false); // Start transaction
-
-            AppLogger.LOGGER.info("Transfer started: From " + fromAccountId + " To " + toAccountId);
-            try (
-                    PreparedStatement deductps = con.prepareStatement(deductSQL);
-                    PreparedStatement addps = con.prepareStatement(addSQL);
-                    PreparedStatement insertps = con.prepareStatement(insertSQL)
-            ) {
-
-                //  Deduct from sender
-                deductps.setDouble(1, amount);
-                deductps.setInt(2, fromAccountId);
-                deductps.executeUpdate();
-
-                //  Add to receiver
-                addps.setDouble(1, amount);
-                addps.setInt(2, toAccountId);
-                addps.executeUpdate();
-
-                //  Insert debit record
-                AccountDAO accountdao = new AccountDAO();
-                BigDecimal fromBalance = accountdao.findBalance(fromAccountId);
-                BigDecimal newFromBalance = fromBalance.subtract(BigDecimal.valueOf(amount));
-
-                insertps.setInt(1, fromAccountId);
-                insertps.setDouble(2, amount);
-                insertps.setString(3, "DEBIT");
-                insertps.setBigDecimal(4, newFromBalance);
-                insertps.executeUpdate();
-
-                //  Insert credit record
-                BigDecimal toBalance = accountdao.findBalance(toAccountId);
-                BigDecimal newToBalance = fromBalance.add(BigDecimal.valueOf(amount));
-
-                insertps.setInt(1, toAccountId);
-                insertps.setDouble(2, amount);
-                insertps.setString(3, "CREDIT");
-                insertps.setBigDecimal(4, newToBalance);
-                insertps.executeUpdate();
-
-                con.commit();
-
-                AppLogger.LOGGER.info("Transfer completed successfully");
-            }
-            catch (Exception e) {
-                con.rollback();
-                AppLogger.LOGGER.severe("Transaction failed: " + e.getMessage());
-            }
-            }
-        }
 
 
     public void saveBatch(List<Transaction> transactions) throws Exception {
