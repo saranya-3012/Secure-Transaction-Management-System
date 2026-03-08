@@ -15,9 +15,7 @@ public class AdminFilter implements Filter {
         HttpSession session = req.getSession(false);
 
         if (session == null || session.getAttribute("admin") == null) {
-
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, "Admin Access Required");
-            return;
+            response.getWriter().println("Admin Access Required");
         }
 
         chain.doFilter(request, response);
