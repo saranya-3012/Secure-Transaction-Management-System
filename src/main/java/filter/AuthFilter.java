@@ -9,9 +9,7 @@ import java.io.IOException;
 public class AuthFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request,
-                         ServletResponse response,
-                         FilterChain chain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
@@ -28,7 +26,7 @@ public class AuthFilter implements Filter {
 
         // If no session → block
         if (session == null || session.getAttribute("role") == null) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Please login first");
+            resp.getWriter().println("Please login first");
             return;
         }
 
@@ -36,13 +34,13 @@ public class AuthFilter implements Filter {
 
         // Admin-only endpoints
         if (path.contains("/admin") && !"ADMIN".equals(role)) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            resp.getWriter().println("Access Denied");
             return;
         }
 
         // Customer-only endpoints
         if (path.contains("/customer") && !"CUSTOMER".equals(role)) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            resp.getWriter().println("Access Denied");
             return;
         }
 
