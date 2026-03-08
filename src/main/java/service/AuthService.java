@@ -11,29 +11,35 @@ public class AuthService {
 
     private static final AdminDAO adminDAO = new AdminDAO();
     private static final CustDAO custDAO = new CustDAO();
-    private static String rawpassword;
 
     public static String loginAdmin(String username, String password) throws Exception {
 
         Optional<Admin> admin = adminDAO.findByUsername(username);
 
-        String enteredPassword = PasswordHash.hashPassword(rawpassword);
+        if (admin.isPresent()) {
+            String storedPassword = admin.get().getPassword();
+            String enteredPassword = PasswordHash.hashPassword(password);
 
-        if (admin.isPresent() && enteredPassword.equals(rawpassword)){
-            return "Admin login Successfully!";
+            if (enteredPassword.equals(storedPassword)) {
+                return username + " login Successfully!";
+            }
         }
-        return "Not login";
+        return "";
     }
 
     public static String loginCustomer(String username, String password) throws Exception {
 
         Optional<Customer> customer = custDAO.findByUsername(username);
 
-        String enteredPassword = PasswordHash.hashPassword(rawpassword);
+        if (customer.isPresent()) {
+            String storedPassword = customer.get().getPassword();
+            String name = customer.get().getFullName();
+            String enteredPassword = PasswordHash.hashPassword(password);
 
-        if (customer.isPresent() && enteredPassword.equals(rawpassword)) {
-            return "Customer login Successfully!";
+            if (enteredPassword.equals(storedPassword)) {
+                return name + " login Successfully!";
+            }
         }
-        return "Not login";
+        return "";
     }
 }
