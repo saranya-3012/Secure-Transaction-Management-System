@@ -11,24 +11,26 @@ import java.util.List;
 
 public class AccountDAO {
 
-	public void create(Account account) throws Exception {
+	public void create(Account account) throws SQLException {
 
 		String sql = "INSERT INTO Accounts(Account_Number, Customer_ID, Account_type, Balance) VALUES(?,?,?,?)";
 
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
 
-			String AccountNumber = AccountNoGenerator.generateAccountNumber();
+			String accountnumber = AccountNoGenerator.generateAccountNumber();
 			ps.setString(1, AccountNumber);
 			ps.setInt(2, account.getCustomerId());
 			ps.setString(3, account.getAccountType());
 			ps.setBigDecimal(4, account.getBalance());
 
 			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new SQLException(e);
 		}
 	}
 
-	public static List<Account> findByCustomerId(String username) throws Exception {
+	public static List<Account> findByCustomerId(String username) throws SQLException {
 
 		List<Account> list = new ArrayList<>();
 		String sql = "SELECT * FROM Accounts A JOIN Customer C ON A.Customer_ID = C.Customer_ID WHERE C.username = ?;";
@@ -51,11 +53,14 @@ public class AccountDAO {
 				list.add(account);
 			}
 		}
+		catch (SQLException e) {
+			throw new SQLException(e);
+		}
 		return list;
 	}
 
 
-	public BigDecimal findBalance(int accountId) throws Exception {
+	public BigDecimal findBalance(int accountId) throws SQLException {
 
 		String sql = "SELECT * FROM Accounts WHERE Account_ID=?";
 
@@ -71,6 +76,9 @@ public class AccountDAO {
 			else{
 				return null;
 			}
+		}
+		catch (SQLException e) {
+			throw new SQLException(e);
 		}
     }
 }
