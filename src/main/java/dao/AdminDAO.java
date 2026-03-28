@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class AdminDAO {
 
-    public Optional<Admin> findByUsername(String username) throws Exception {
+    public Optional<Admin> findByUsername(String username) {
         String sql = "SELECT * FROM Admin WHERE Username=?";
 
         try (Connection con = DBConnection.getConnection();
