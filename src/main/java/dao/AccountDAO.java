@@ -13,7 +13,7 @@ public class AccountDAO {
 
 	public void create(Account account) throws Exception {
 
-		String sql = "INSERT INTO Accounts(account_number, customer_id, Account_type, balance) VALUES(?,?,?,?)";
+		String sql = "INSERT INTO Accounts(Account_Number, Customer_ID, Account_type, Balance) VALUES(?,?,?,?)";
 
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -31,7 +31,7 @@ public class AccountDAO {
 	public static List<Account> findByCustomerId(String username) throws Exception {
 
 		List<Account> list = new ArrayList<>();
-		String sql = "SELECT * FROM Accounts A JOIN Customer C ON A.customer_id = C.customer_id WHERE C.username = ?;";
+		String sql = "SELECT * FROM Accounts A JOIN Customer C ON A.Customer_ID = C.Customer_ID WHERE C.username = ?;";
 
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
@@ -57,7 +57,7 @@ public class AccountDAO {
 
 	public BigDecimal findBalance(int accountId) throws Exception {
 
-		String sql = "SELECT * FROM Accounts WHERE account_id=?";
+		String sql = "SELECT * FROM Accounts WHERE Account_ID=?";
 
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
