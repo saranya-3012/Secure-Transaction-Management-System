@@ -8,20 +8,22 @@ public class Transaction {
     private int transactionId;
     private int accountId;
     private BigDecimal amount;
-    private String type;   // CREDIT / DEBIT
+    private String type;
     private BigDecimal totalamount;
+    private String status;
     private LocalDateTime createdAt;
 
     public Transaction() {}
 
     public Transaction(int transactionId, int accountId,
                        BigDecimal amount, String type,
-                       BigDecimal totalamount, LocalDateTime createdAt) {
+                       BigDecimal totalamount, String status, LocalDateTime createdAt) {
         this.transactionId = transactionId;
         this.accountId = accountId;
         this.amount = amount;
         this.type = type;
         this.totalamount = totalamount;
+        this.status = status;
         this.createdAt = createdAt;
     }
 
@@ -58,6 +60,13 @@ public class Transaction {
     }
     public void setTotalAmount(BigDecimal totalamount) {
         this.totalamount = totalamount;
+    }
+
+    public String getStatus(){
+        return status;
+    }
+    public void setStatus(String status){
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

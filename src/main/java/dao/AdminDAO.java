@@ -1,8 +1,7 @@
 package dao;
 
 import model.Admin;
-import model.Customer;
-import util.DBConnection;
+import dbconfiguration.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +10,6 @@ import java.util.Optional;
 
 public class AdminDAO {
 
-    // View User Details
     public Optional<Admin> findByUsername(String username) throws Exception {
         String sql = "SELECT * FROM Admin WHERE Username=?";
 

@@ -7,16 +7,10 @@ public class Admin {
     private int adminId;
     private String username;
     private String password;
+    private String role;
     private LocalDateTime createdAt;
 
     public Admin() {}
-
-    public Admin(int adminId, String username, String password, LocalDateTime createdAt) {
-        this.adminId = adminId;
-        this.username = username;
-        this.password = password;
-        this.createdAt = createdAt;
-    }
 
     public int getAdminId() {
         return adminId;
@@ -37,6 +31,13 @@ public class Admin {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

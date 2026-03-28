@@ -1,57 +1,75 @@
 package controller;
 
 import dao.TransactionDAO;
+import model.Transaction;
+import service.TransactionService;
+import util.AppLogger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.List;
 
-@WebServlet("/customer/transfer")
+@WebServlet("/transfer")
 public class TransactionServlet extends HttpServlet {
 
-    private TransactionDAO transactionDAO = new TransactionDAO();
+    private final TransactionDAO transactionDAO = new TransactionDAO();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String action = req.getParameter("action");
 
-        int fromAccount = Integer.parseInt(req.getParameter("fromAccount"));
-        int toAccount = Integer.parseInt(req.getParameter("toAccount"));
-        double amount = Double.parseDouble(req.getParameter("amount"));
+        if("create".equals(action)){
 
-        try {
-            transactionDAO.transferMoney(fromAccount, toAccount, amount);
-            resp.getWriter().println("Transaction Successful");
-        }
-        catch (Exception e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Transaction Failed");
+            HttpSession session = req.getSession(false);
+
+            int fromAccount = (int) session.getAttribute("accountId");
+            int toAccount = Integer.parseInt(req.getParameter("toAccount"));
+            double amount = Double.parseDouble(req.getParameter("amount"));
+
+            if (amount <= 0 || amount >= 25000) {
+                resp.getWriter().println("Invalid amount");
+            }
+
+            try {
+                TransactionService.transfer(fromAccount, toAccount, amount);
+            }
+            catch (ServletException e) {
+                throw new ServletException(e);
+            }
+            catch (Exception e) {
+                throw new IOException(e);
+            }
         }
     }
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        int accountId = Integer.parseInt(req.getParameter("accountId"));
+        String action = req.getParameter("action");
 
-        int page = 1;
-        int size = 5;
+        if("view".equals(action)){
+            HttpSession session = req.getSession(false);
 
-        if (req.getParameter("page") != null) {
-            page = Integer.parseInt(req.getParameter("page"));
+            int accountId = (int) session.getAttribute("accountId");
+            int pageno = Integer.parseInt(req.getParameter("pageNo"));
+
+            try {
+                List<Transaction> transactions =
+                        transactionDAO.findByAccountId(accountId, pageno);
+
+                req.setAttribute("transactions", transactions);
+                AppLogger.LOGGER.severe("Transaction details viewed ");
+
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
         }
 
-        try {
-            var transactions =
-                    transactionDAO.findByAccountId(accountId, page, size);
 
-            req.setAttribute("transactions", transactions);
-            req.getRequestDispatcher("/customer/transactionHistory.jsp")
-                    .forward(req, resp);
-
-        } catch (Exception e) {
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-}
-
+    }
 }

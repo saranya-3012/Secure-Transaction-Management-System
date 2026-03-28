@@ -8,7 +8,7 @@ public class PasswordHash {
     	
         try {
         	
-            MessageDigest md = MessageDigest.getInstance("SHA-256");    // Secure Hash Algorithm
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
       
             byte[] hashedBytes = md.digest(password.getBytes());
 

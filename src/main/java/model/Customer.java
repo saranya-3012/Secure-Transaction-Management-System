@@ -1,7 +1,5 @@
 package model;
 
-import java.time.LocalDateTime;
-
 public class Customer {
 
     private int customerId;
@@ -10,22 +8,21 @@ public class Customer {
     private String fullName;
     private String email;
     private String phone;
-    private LocalDateTime createdAt;
+    private String role;
 
     public Customer() {}
 
-    public Customer(int customerId, String username, String password, String fullName, String email, String phone, LocalDateTime createdAt) {
+    public Customer(int customerId, String username, String password, String fullName, String email, String phone, String role) {
         this.customerId = customerId;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
-        this.createdAt = createdAt;
+        this.role = role;
     }
 
     public int getCustomerId() {
-
         return customerId;
     }
     public void setCustomerId(int customerId) {
@@ -67,10 +64,11 @@ public class Customer {
         this.phone = phone;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getRole() {
+        return role;
     }
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setRole(String role) {
+        this.role = role;
     }
+
 }
