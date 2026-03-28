@@ -106,39 +106,39 @@ public class TransactionDAO {
     }
 
 
-    public void saveBatch(List<Transaction> transactions) throws Exception {
-        Connection con = DBConnection.getConnection();
-        try {
+//     public void saveBatch(List<Transaction> transactions) throws Exception {
+//         Connection con = DBConnection.getConnection();
+//         try {
 
-            con.setAutoCommit(false);
+//             con.setAutoCommit(false);
 
-            String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
-            PreparedStatement ps = con.prepareStatement(sql);
+//             String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
+//             PreparedStatement ps = con.prepareStatement(sql);
 
-            int count = 0;
-            int batchSize = 10;
+//             int count = 0;
+//             int batchSize = 10;
 
-            for (Transaction tx : transactions) {
+//             for (Transaction tx : transactions) {
 
-                ps.setInt(1, tx.getAccountId());
-                ps.setBigDecimal(2, tx.getAmount());
-                ps.setString(3, tx.getType());
-                ps.setBigDecimal(4, tx.getTotalAmount());
-                ps.addBatch();
-                count++;
+//                 ps.setInt(1, tx.getAccountId());
+//                 ps.setBigDecimal(2, tx.getAmount());
+//                 ps.setString(3, tx.getType());
+//                 ps.setBigDecimal(4, tx.getTotalAmount());
+//                 ps.addBatch();
+//                 count++;
 
-                if (count % batchSize == 0) {
-                    ps.executeBatch();
-                    ps.clearBatch();
-                }
-            }
-            ps.executeBatch();
+//                 if (count % batchSize == 0) {
+//                     ps.executeBatch();
+//                     ps.clearBatch();
+//                 }
+//             }
+//             ps.executeBatch();
 
-            con.commit();
+//             con.commit();
 
-        } catch (Exception e) {
-            if (con != null) con.rollback();
-            throw new Exception("Batch insert failed", e);
-        }
-    }
-}
+//         } catch (Exception e) {
+//             if (con != null) con.rollback();
+//             throw new Exception("Batch insert failed", e);
+//         }
+//     }
+ }
