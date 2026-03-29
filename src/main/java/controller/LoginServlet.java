@@ -8,6 +8,7 @@ import service.AuthService;
 import util.AppLogger;
 import util.Validation;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 
         resp.setContentType("text/plain");
 
@@ -109,10 +110,9 @@ public class LoginServlet extends HttpServlet {
 
         }
         catch (IOException e) {
-            throw new IOException(e);
-
+            throw new IOException("I/O error while writing response", e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServletException("Error during login process", e);
         }
     }
 }
