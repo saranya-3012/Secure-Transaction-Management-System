@@ -18,7 +18,7 @@ public class TransactionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
         String action = req.getParameter("action");
 
         if("create".equals(action)){
