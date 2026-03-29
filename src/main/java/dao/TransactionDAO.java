@@ -22,7 +22,7 @@ public class TransactionDAO {
 
             con.setAutoCommit(false);
 
-            AppLogger.LOGGER.info("Transfer started: From " + fromAccountId + " To " + toAccountId);
+            AppLogger.LOGGER.info(String.format("Transfer started: From %d To %d",fromAccountId, toAccountId));
             try (
                     PreparedStatement senderps = con.prepareStatement(senderSQL);
                     PreparedStatement receiverps = con.prepareStatement(receiverSQL);
@@ -106,39 +106,39 @@ public class TransactionDAO {
     }
 
 
-//     public void saveBatch(List<Transaction> transactions) throws Exception {
-//         Connection con = DBConnection.getConnection();
-//         try {
-
-//             con.setAutoCommit(false);
-
-//             String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
-//             PreparedStatement ps = con.prepareStatement(sql);
-
-//             int count = 0;
-//             int batchSize = 10;
-
-//             for (Transaction tx : transactions) {
-
-//                 ps.setInt(1, tx.getAccountId());
-//                 ps.setBigDecimal(2, tx.getAmount());
-//                 ps.setString(3, tx.getType());
-//                 ps.setBigDecimal(4, tx.getTotalAmount());
-//                 ps.addBatch();
-//                 count++;
-
-//                 if (count % batchSize == 0) {
-//                     ps.executeBatch();
-//                     ps.clearBatch();
-//                 }
-//             }
-//             ps.executeBatch();
-
-//             con.commit();
-
-//         } catch (Exception e) {
-//             if (con != null) con.rollback();
-//             throw new Exception("Batch insert failed", e);
-//         }
-//     }
- }
+//    public void saveBatch(List<Transaction> transactions) throws SQLException {
+//        Connection con = DBConnection.getConnection();
+//        try {
+//
+//            con.setAutoCommit(false);
+//
+//            String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
+//            PreparedStatement ps = con.prepareStatement(sql);
+//
+//            int count = 0;
+//            int batchSize = 10;
+//
+//            for (Transaction tx : transactions) {
+//
+//                ps.setInt(1, tx.getAccountId());
+//                ps.setBigDecimal(2, tx.getAmount());
+//                ps.setString(3, tx.getType());
+//                ps.setBigDecimal(4, tx.getTotalAmount());
+//                ps.addBatch();
+//                count++;
+//
+//                if (count % batchSize == 0) {
+//                    ps.executeBatch();
+//                    ps.clearBatch();
+//                }
+//            }
+//            ps.executeBatch();
+//
+//            con.commit();
+//
+//        } catch (SQLException e) {
+//            con.rollback();
+//            throw new Exception("Batch insert failed", e);
+//        }
+//    }
+}
