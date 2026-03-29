@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class CustDAO {
 
-    public void register(String username, String password, String name, String email, String phone) throws Exception {
+    public void register(String username, String password, String name, String email, String phone) throws SQLException {
         String sql = "INSERT INTO Customer(Username, Password, Full_name, Email, Phone, Role) VALUES(?,?,?,?,?,?)";
 
         try (Connection con = DBConnection.getConnection();
@@ -23,9 +23,12 @@ public class CustDAO {
 
             ps.executeUpdate();
         }
+        catch (SQLException e) {
+            throw new SQLException(e);
+        }
     }
 
-    public static Optional<Customer> findByUsername(String username) throws Exception {
+    public static Optional<Customer> findByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM Customer WHERE Username=?";
 
         try (Connection con = DBConnection.getConnection();
@@ -45,6 +48,9 @@ public class CustDAO {
 
                 return Optional.of(customer);
             }
+        }
+        catch (SQLException e) {
+            throw new SQLException(e);
         }
         return Optional.empty();
     }
