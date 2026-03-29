@@ -36,14 +36,12 @@ public class TransactionServlet extends HttpServlet {
 
                 TransactionService.transfer(fromAccount, toAccount, amount);
             }
-            catch (ServletException e) {
-                throw new ServletException(e);
-            }
             catch (NumberFormatException e) {
-                throw new NumberFormatException();
-            }
-            catch (Exception e) {
-                throw new IOException(e);
+                resp.getWriter().println("Invalid numeric input: " + e.getMessage());
+                AppLogger.LOGGER.warning("Failed to parse account or amount: " + e.getMessage());
+            } catch (Exception e) {
+                resp.getWriter().println("Transaction failed: " + e.getMessage());
+                AppLogger.LOGGER.severe("Error during transfer: " + e.getMessage());
             }
         }
     }
@@ -71,7 +69,8 @@ public class TransactionServlet extends HttpServlet {
 
             }
             catch (Exception e) {
-                throw new IOException(e);
+                AppLogger.LOGGER.severe("Error while fetching transactions: " + e.getMessage());
+                resp.getWriter().println("Unable to process your request.");
             }
 
         }
