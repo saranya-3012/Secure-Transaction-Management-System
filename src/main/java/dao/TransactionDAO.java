@@ -105,15 +105,16 @@ public class TransactionDAO {
 
     }
 
-    @SuppressWarnings("unused")
+@SuppressWarnings("unused")
     public void saveBatch(List<Transaction> transactions) throws SQLException {
         Connection con = DBConnection.getConnection();
+        PreparedStatement ps = null;
         try {
 
             con.setAutoCommit(false);
 
             String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
-            PreparedStatement ps = con.prepareStatement(sql);
+            ps = con.prepareStatement(sql);
 
             int count = 0;
             int batchSize = 10;
@@ -139,6 +140,12 @@ public class TransactionDAO {
         } catch (SQLException e) {
             con.rollback();
             throw new SQLException("Batch insert failed", e);
+        }
+        finally{
+            if (ps != null) {
+                ps.close();
+            }
+            con.close();
         }
     }
 }
