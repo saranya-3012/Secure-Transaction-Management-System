@@ -44,7 +44,7 @@ public class CustomerDAO {
                         customer.setPassword(rs.getString("password"));
                         customer.setFullName(rs.getString("full_name"));
                         customer.setEmail(rs.getString("email"));
-                        customer.setEmail(rs.getString("phone"));
+                        customer.setPhone(rs.getString("phone"));
 
                 return Optional.of(customer);
             }
