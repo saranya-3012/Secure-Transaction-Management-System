@@ -25,15 +25,16 @@ public class LoginServlet extends HttpServlet {
         String password = req.getParameter("password");
         String role = req.getParameter("role");
 
-        if (!Validation.isValidUsername(username)) {
-            resp.getWriter().println("Enter valid Username!");
-        }
-
-        if (!Validation.isValidPassword(password)) {
-            resp.getWriter().println("Enter valid Password!");
-        }
-
         try {
+
+            if (!Validation.isValidUsername(username)) {
+                resp.getWriter().println("Enter valid Username!");
+            }
+
+            if (!Validation.isValidPassword(password)) {
+                resp.getWriter().println("Enter valid Password!");
+            }
+
             HttpSession session = req.getSession(true);
 
             if ("admin".equalsIgnoreCase(role)) {
@@ -46,7 +47,7 @@ public class LoginServlet extends HttpServlet {
 
                 if (getAdminData.isPresent()) {
 
-                    AppLogger.LOGGER.info(username + " logged as ADMIN");
+                    AppLogger.LOGGER.info(String.format("%s logged as ADMIN", username));
 
                     session.setAttribute("userId", getAdminData.get().getAdminId());
                     session.setAttribute("role", "ADMIN");
@@ -73,6 +74,9 @@ public class LoginServlet extends HttpServlet {
                         case "4":
                             resp.sendRedirect("/transfer?action=view");
                             break;
+                        default:
+                            AppLogger.LOGGER.warning(String.format("Invalid menu option selected: %s", option));
+                            break;
                     }
                 } else {
                     resp.getWriter().println("Access Denied!");
@@ -89,7 +93,7 @@ public class LoginServlet extends HttpServlet {
 
                 if (getCustomerData.isPresent()) {
 
-                    AppLogger.LOGGER.info(username + " logged as CUSTOMER");
+                    AppLogger.LOGGER.info(String.format("%s logged as CUSTOMER", username));
 
                     session.setAttribute("userId", getCustomerData.get().getCustomerId());
                     session.setAttribute("role", "CUSTOMER");
@@ -103,8 +107,12 @@ public class LoginServlet extends HttpServlet {
                 resp.getWriter().println("Role must be either 'admin' or 'customer'");
             }
 
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        }
+        catch (IOException e) {
+            throw new IOException(e);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
