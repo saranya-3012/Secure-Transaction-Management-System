@@ -10,7 +10,9 @@ public class Admin {
     private String role;
     private LocalDateTime createdAt;
 
-    public Admin() {}
+    public Admin() {
+        throw new UnsupportedOperationException("Admin should not be instantiated directly");
+    }
 
     public int getAdminId() {
         return adminId;
