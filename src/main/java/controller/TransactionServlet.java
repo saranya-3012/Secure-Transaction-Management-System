@@ -25,19 +25,22 @@ public class TransactionServlet extends HttpServlet {
 
             HttpSession session = req.getSession(false);
 
-            int fromAccount = (int) session.getAttribute("accountId");
-            int toAccount = Integer.parseInt(req.getParameter("toAccount"));
-            double amount = Double.parseDouble(req.getParameter("amount"));
-
-            if (amount <= 0 || amount >= 25000) {
-                resp.getWriter().println("Invalid amount");
-            }
-
             try {
+                int fromAccount = (int) session.getAttribute("accountId");
+                int toAccount = Integer.parseInt(req.getParameter("toAccount"));
+                double amount = Double.parseDouble(req.getParameter("amount"));
+
+                if (amount <= 0 || amount >= 25000) {
+                    resp.getWriter().println("Invalid amount");
+                }
+
                 TransactionService.transfer(fromAccount, toAccount, amount);
             }
             catch (ServletException e) {
                 throw new ServletException(e);
+            }
+            catch (NumberFormatException e) {
+                throw new NumberFormatException();
             }
             catch (Exception e) {
                 throw new IOException(e);
@@ -48,26 +51,29 @@ public class TransactionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+            throws IOException {
 
         String action = req.getParameter("action");
 
         if("view".equals(action)){
             HttpSession session = req.getSession(false);
 
-            int accountId = (int) session.getAttribute("accountId");
-            int pageno = Integer.parseInt(req.getParameter("pageNo"));
-
             try {
+
+                int accountId = (int) session.getAttribute("accountId");
+                int pageno = Integer.parseInt(req.getParameter("pageNo"));
+                
                 List<Transaction> transactions =
                         transactionDAO.findByAccountId(accountId, pageno);
 
                 req.setAttribute("transactions", transactions);
                 AppLogger.LOGGER.severe("Transaction details viewed ");
 
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 throw new IOException(e);
             }
+
         }
 
 
