@@ -101,9 +101,16 @@ public class LoginServlet extends HttpServlet {
 
         }
         catch (IOException e) {
-            throw new IOException("I/O error while writing response", e);
-        } catch (Exception e) {
-            throw new ServletException("Error during login process", e);
+            AppLogger.LOGGER.severe("I/O error while writing response: " + e.getMessage());
+        }
+
+        catch (Exception e) {
+            AppLogger.LOGGER.severe("Error during login process: " + e.getMessage());
+            try {
+                resp.getWriter().println("Something went wrong. Please try again.");
+            } catch (IOException ioEx) {
+                AppLogger.LOGGER.severe("Failed to write response: " + ioEx.getMessage());
+            }
         }
     }
 }
