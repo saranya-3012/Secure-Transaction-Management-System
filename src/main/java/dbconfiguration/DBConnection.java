@@ -12,7 +12,7 @@ public class DBConnection {
 
     private static final HikariDataSource dataSource;
 
-    private AccountNoGenerator() {
+    private DBConnection() {
 		throw new UnsupportedOperationException("Utility class");
 	}
     
