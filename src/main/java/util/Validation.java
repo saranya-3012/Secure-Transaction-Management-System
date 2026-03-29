@@ -16,9 +16,9 @@ public final class Validation {
 
 	   private static final String PASSWORD = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
 
-		public static boolean isValidUsername(String username) {
-			return username == null || !Pattern.matches(USERNAME, username);
-		}
+	public static boolean isValidUsername(String username) {
+		return username != null && Pattern.matches(USERNAME, username);
+	}
 
 	    public static boolean isValidEmail(String email) {
 	        return email != null && Pattern.matches(EMAIL, email);
@@ -28,8 +28,8 @@ public final class Validation {
 	        return phone != null && Pattern.matches(PHONE, phone);
 	    }
 
-	    public static boolean isValidPassword(String password) {
-	        return password == null || !Pattern.matches(PASSWORD, password);
-	    }
+	public static boolean isValidPassword(String password) {
+		return password != null && Pattern.matches(PASSWORD, password);
+	}
 
 	}  
