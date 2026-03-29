@@ -21,33 +21,37 @@ public class AccountServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        if ("create".equals(action)) {
+        try {
+            if ("create".equals(action)) {
 
-            int customerId = Integer.parseInt(req.getParameter("customerId"));
-            String accountno = req.getParameter("AccountNo");
-            BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(req.getParameter("balance")));
+                int customerId = Integer.parseInt(req.getParameter("customerId"));
+                String accountNumber = req.getParameter("AccountNo");
+                BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(req.getParameter("balance")));
 
-            Account account = new Account();
-            account.setCustomerId(customerId);
-            account.setBalance(balance);
-            account.setAccountNumber(accountno);
+                Account account = new Account();
+                account.setCustomerId(customerId);
+                account.setBalance(balance);
+                account.setAccountNumber(accountNumber);
 
-            try {
                 accountDAO.create(account);
                 resp.getWriter().println("Account Created Successfully");
-                AppLogger.LOGGER.info(String.format("New Account created with Account Number %s", accountno));
-            }
-            catch (SQLException e) {
-                throw new ServletException(e);
-            }
-            catch (IOException e) {
-                throw new IOException(e);
-            }
-            catch (Exception e) {
-                AppLogger.LOGGER.severe((String.format("Error while creating new Account : %s ", e.getMessage())));
+                AppLogger.LOGGER.info(String.format("New Account created with Account Number %s", accountNumber));
             }
         }
+        catch (SQLException e) {
+            throw new ServletException(e);
+        }
+        catch (IOException e) {
+            throw new IOException(e);
+        }
+        catch (NumberFormatException e) {
+            throw new NumberFormatException();
+        }
+        catch (Exception e) {
+            AppLogger.LOGGER.severe((String.format("Error while creating new Account : %s ", e.getMessage())));
+        }
     }
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, NumberFormatException {
@@ -61,14 +65,11 @@ public class AccountServlet extends HttpServlet {
             try {
                 Account acc = (Account) AccountDAO.findByCustomerId(username);
                 resp.getWriter().println(acc);
-            }
-            catch (SQLException e) {
+            } catch (SQLException e) {
                 throw new ServletException(e);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new IOException(e);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 AppLogger.LOGGER.severe((String.format("Error while get Account : " + e.getMessage())));
             }
         }
