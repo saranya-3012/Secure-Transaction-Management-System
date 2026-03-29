@@ -33,7 +33,7 @@ public class RegisterServlet extends HttpServlet {
             AppLogger.LOGGER.info(username + " registered successfully");
         }
         catch (Exception e) {
-            AppLogger.LOGGER.severe("Error while registering customer: " + e.getMessage());
+            AppLogger.LOGGER.severe(String.format("Error while registering customer: %s ", e.getMessage()));
         }
     }
 }
