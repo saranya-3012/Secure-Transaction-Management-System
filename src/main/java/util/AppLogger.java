@@ -10,7 +10,7 @@ public class AppLogger {
     private AppLogger() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
-    
+
     public static final Logger LOGGER = Logger.getLogger(AppLogger.class.getName());
 
     static {
@@ -20,8 +20,8 @@ public class AppLogger {
             LOGGER.addHandler(fh);
             LOGGER.info("Logger initialized, writing to Logfile.log");
         }
-         catch (IOException e) {
-            throw new RuntimeException(e);
+        catch (IOException e) {
+                throw new IllegalStateException("Failed to read the file", e);
         }
     }
 }
