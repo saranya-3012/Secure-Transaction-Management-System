@@ -18,8 +18,8 @@ public class AccountDAO {
 		try (Connection con = DBConnection.getConnection();
 			 PreparedStatement ps = con.prepareStatement(sql)) {
 
-			String accountnumber = AccountNoGenerator.generateAccountNumber();
-			ps.setString(1, AccountNumber);
+			String accountNumber = AccountNoGenerator.generateAccountNumber();
+			ps.setString(1, accountNumber);
 			ps.setInt(2, account.getCustomerId());
 			ps.setString(3, account.getAccountType());
 			ps.setBigDecimal(4, account.getBalance());
