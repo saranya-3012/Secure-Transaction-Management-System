@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TransactionDAO {
 
-    public void transferMoney(int fromAccountId, int toAccountId, double amount) throws Exception {
+    public void transferMoney(int fromAccountId, int toAccountId, double amount) throws SQLException {
 
         String senderSQL = "UPDATE Accounts SET balance = balance - ? WHERE account_id = ?";
         String receiverSQL = "UPDATE Accounts SET balance = balance + ? WHERE account_id = ?";
@@ -24,18 +24,18 @@ public class TransactionDAO {
 
             AppLogger.LOGGER.info(String.format("Transfer started: From %d To %d",fromAccountId, toAccountId));
             try (
-                    PreparedStatement senderps = con.prepareStatement(senderSQL);
-                    PreparedStatement receiverps = con.prepareStatement(receiverSQL);
-                    PreparedStatement transactionps = con.prepareStatement(transactionSQL)
+                    PreparedStatement senderPs = con.prepareStatement(senderSQL);
+                    PreparedStatement receiverPs = con.prepareStatement(receiverSQL);
+                    PreparedStatement transactionPs = con.prepareStatement(transactionSQL)
             ) {
 
-                senderps.setDouble(1, amount);
-                senderps.setInt(2, fromAccountId);
-                int senderUpdated = senderps.executeUpdate();
+                senderPs.setDouble(1, amount);
+                senderPs.setInt(2, fromAccountId);
+                int senderUpdated = senderPs.executeUpdate();
 
-                receiverps.setDouble(1, amount);
-                receiverps.setInt(2, toAccountId);
-                int receiverUpdated = receiverps.executeUpdate();
+                receiverPs.setDouble(1, amount);
+                receiverPs.setInt(2, toAccountId);
+                int receiverUpdated = receiverPs.executeUpdate();
 
                 String status = (senderUpdated == 1 && receiverUpdated == 1) ? "Success" : "Failed";
 
@@ -43,25 +43,25 @@ public class TransactionDAO {
                 BigDecimal fromBalance = accountdao.findBalance(fromAccountId);
                 BigDecimal toBalance = accountdao.findBalance(toAccountId);
 
-                transactionps.setInt(1, fromAccountId);
-                transactionps.setDouble(2, amount);
-                transactionps.setString(3, "DEBIT");
-                transactionps.setBigDecimal(4, fromBalance);
-                transactionps.setString(5, status);
-                transactionps.executeUpdate();
+                transactionPs.setInt(1, fromAccountId);
+                transactionPs.setDouble(2, amount);
+                transactionPs.setString(3, "DEBIT");
+                transactionPs.setBigDecimal(4, fromBalance);
+                transactionPs.setString(5, status);
+                transactionPs.executeUpdate();
 
-                transactionps.setInt(1, toAccountId);
-                transactionps.setDouble(2, amount);
-                transactionps.setString(3, "CREDIT");
-                transactionps.setBigDecimal(4, toBalance);
-                transactionps.setString(5, status);
-                transactionps.executeUpdate();
+                transactionPs.setInt(1, toAccountId);
+                transactionPs.setDouble(2, amount);
+                transactionPs.setString(3, "CREDIT");
+                transactionPs.setBigDecimal(4, toBalance);
+                transactionPs.setString(5, status);
+                transactionPs.executeUpdate();
 
                 con.commit();
 
                 AppLogger.LOGGER.info("Transfer completed successfully");
             }
-            catch (Exception e) {
+            catch (SQLException e) {
                 con.rollback();
                 AppLogger.LOGGER.severe("Transaction failed: " + e.getMessage());
             }
@@ -105,40 +105,40 @@ public class TransactionDAO {
 
     }
 
+    @SuppressWarnings("unused")
+    public void saveBatch(List<Transaction> transactions) throws SQLException {
+        Connection con = DBConnection.getConnection();
+        try {
 
-//    public void saveBatch(List<Transaction> transactions) throws SQLException {
-//        Connection con = DBConnection.getConnection();
-//        try {
-//
-//            con.setAutoCommit(false);
-//
-//            String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
-//            PreparedStatement ps = con.prepareStatement(sql);
-//
-//            int count = 0;
-//            int batchSize = 10;
-//
-//            for (Transaction tx : transactions) {
-//
-//                ps.setInt(1, tx.getAccountId());
-//                ps.setBigDecimal(2, tx.getAmount());
-//                ps.setString(3, tx.getType());
-//                ps.setBigDecimal(4, tx.getTotalAmount());
-//                ps.addBatch();
-//                count++;
-//
-//                if (count % batchSize == 0) {
-//                    ps.executeBatch();
-//                    ps.clearBatch();
-//                }
-//            }
-//            ps.executeBatch();
-//
-//            con.commit();
-//
-//        } catch (SQLException e) {
-//            con.rollback();
-//            throw new Exception("Batch insert failed", e);
-//        }
-//    }
+            con.setAutoCommit(false);
+
+            String sql = "INSERT INTO Transactions(account_id, amount, type, total_amount, status) VALUES (?, ?, ?, ?, 'Success')";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            int count = 0;
+            int batchSize = 10;
+
+            for (Transaction tx : transactions) {
+
+                ps.setInt(1, tx.getAccountId());
+                ps.setBigDecimal(2, tx.getAmount());
+                ps.setString(3, tx.getType());
+                ps.setBigDecimal(4, tx.getTotalAmount());
+                ps.addBatch();
+                count++;
+
+                if (count % batchSize == 0) {
+                    ps.executeBatch();
+                    ps.clearBatch();
+                }
+            }
+            ps.executeBatch();
+
+            con.commit();
+
+        } catch (SQLException e) {
+            con.rollback();
+            throw new SQLException("Batch insert failed", e);
+        }
+    }
 }
