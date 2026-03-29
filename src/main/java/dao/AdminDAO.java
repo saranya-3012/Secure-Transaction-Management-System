@@ -6,11 +6,12 @@ import dbconfiguration.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class AdminDAO {
 
-    public Optional<Admin> findByUsername(String username) {
+    public Optional<Admin> findByUsername(String username) throws SQLException{
         String sql = "SELECT * FROM Admin WHERE Username=?";
 
         try (Connection con = DBConnection.getConnection();
@@ -28,6 +29,10 @@ public class AdminDAO {
                         );
                 return Optional.of(admin);
             }
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return Optional.empty();
     }
