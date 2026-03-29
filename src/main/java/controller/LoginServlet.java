@@ -7,7 +7,6 @@ import model.Customer;
 import service.AuthService;
 import util.AppLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.util.logging.Level;
@@ -18,7 +17,7 @@ import java.util.Optional;
 public class LoginServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
 
         resp.setContentType("text/plain");
 
@@ -45,7 +44,6 @@ public class LoginServlet extends HttpServlet {
                     session.setAttribute("role", "ADMIN");
 
                     resp.getWriter().println("-----ADMIN dashboard-----");
-                    resp.getWriter().println("MENU----");
                     resp.getWriter().println("1. Create new Customer Account");
                     resp.getWriter().println("2. View Customer details");
                     resp.getWriter().println("3. New Transaction");
@@ -56,7 +54,6 @@ public class LoginServlet extends HttpServlet {
                         case "1":
                             resp.sendRedirect("/account?action=create");
                             break;
-
                         case "2":
                             resp.sendRedirect("/account?action=view");
                             break;
@@ -100,10 +97,6 @@ public class LoginServlet extends HttpServlet {
             }
 
         }
-        catch (IOException e) {
-            AppLogger.LOGGER.severe("I/O error while writing response: " + e.getMessage());
-        }
-
         catch (Exception e) {
             AppLogger.LOGGER.severe("Error during login process: " + e.getMessage());
             try {
