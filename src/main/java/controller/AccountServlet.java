@@ -4,8 +4,8 @@ import dao.AccountDAO;
 import model.Account;
 import util.AppLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import java.util.logging.Level;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,7 +17,7 @@ public class AccountServlet extends HttpServlet {
     private final AccountDAO accountDAO = new AccountDAO();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, NumberFormatException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws NumberFormatException {
 
         String action = req.getParameter("action");
 
@@ -35,26 +35,26 @@ public class AccountServlet extends HttpServlet {
 
                 accountDAO.create(account);
                 resp.getWriter().println("Account Created Successfully");
-                AppLogger.LOGGER.info("New Account created with Account Number {0}");            }
-        }
-        catch (NumberFormatException e) {
-            throw new ServletException("Failed to parse number. Please enter valid numeric values.", e);
-        }
-        catch (IOException e) {
+                AppLogger.LOGGER.log(Level.INFO, "New Account created with Account Number {0}", accountNumber);
+            }
+        } catch (NumberFormatException e) {
+            AppLogger.LOGGER.warning("Failed to parse numeric input: " + e.getMessage());
+            try {
+                resp.getWriter().println("Invalid number format. Please enter valid numeric values.");
+            } catch (IOException ioEx) {
+                AppLogger.LOGGER.severe("Failed to write response: " + ioEx.getMessage());
+            }
+        } catch (IOException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().println("Internal server error while processing request");
             AppLogger.LOGGER.severe("IOException in AccountServlet: " + e.getMessage());
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             AppLogger.LOGGER.severe("Database error while creating account: " + e.getMessage());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().println("Internal server error while creating account");
         }
     }
 
-
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, NumberFormatException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws NumberFormatException {
 
         String action = req.getParameter("action");
 
@@ -63,16 +63,19 @@ public class AccountServlet extends HttpServlet {
             String username = req.getParameter("username");
 
             try {
-                Account acc = (Account) AccountDAO.findByCustomerId(username);
-                resp.getWriter().println(acc);
+                java.util.List<Account> accounts = AccountDAO.findByCustomerId(username);
+                resp.getWriter().println(accounts);
             } catch (SQLException e) {
                 AppLogger.LOGGER.severe("Database error: " + e.getMessage());
-                throw new ServletException("Unable to create account, contact support", e);
-            } catch (IOException e) {
-                AppLogger.LOGGER.severe("I/O error: " + e.getMessage());
-                throw new ServletException("Server error occurred while writing response", e);
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                try {
+                    resp.getWriter().println("Unable to fetch account details");
+                } catch (IOException ioEx) {
+                    AppLogger.LOGGER.severe("Write failed: " + ioEx.getMessage());
+                }
             } catch (Exception e) {
-                AppLogger.LOGGER.severe(String.format("Error while get Account: %s", e.getMessage()));            }
-        }
+                AppLogger.LOGGER.log(Level.SEVERE, "Error while get Account: {0}", e.getMessage());
+            }
+            }
     }
 }
