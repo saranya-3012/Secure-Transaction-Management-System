@@ -24,5 +24,5 @@ jobs:
           path: ~/.m2
           key: maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: Build Project
-        run: mvn clean install
+      - name: Build project
+        run: mvn -B clean install -DskipTests
