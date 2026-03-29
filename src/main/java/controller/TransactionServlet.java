@@ -14,10 +14,10 @@ import java.util.List;
 public class TransactionServlet extends HttpServlet {
 
     private final TransactionDAO transactionDAO = new TransactionDAO();
+    private static final String WRITE_ERROR = "Failed to write response: ";
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         String action = req.getParameter("action");
 
         if("create".equals(action)){
@@ -39,14 +39,14 @@ public class TransactionServlet extends HttpServlet {
                 try {
                     resp.getWriter().println("Invalid numeric input: " + e.getMessage());
                 } catch (IOException ioEx) {
-                    AppLogger.LOGGER.severe("Failed to write response: " + ioEx.getMessage());
+                    AppLogger.LOGGER.severe(WRITE_ERROR + ioEx.getMessage());
                 }
                 AppLogger.LOGGER.warning("Failed to parse account or amount: " + e.getMessage());
             } catch (Exception e) {
                 try {
                     resp.getWriter().println("Transaction failed: " + e.getMessage());
                 } catch (IOException ioEx) {
-                    AppLogger.LOGGER.severe("Failed to write response: " + ioEx.getMessage());
+                    AppLogger.LOGGER.severe(WRITE_ERROR + ioEx.getMessage());
                 }
             }
         }
@@ -54,8 +54,7 @@ public class TransactionServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp){
 
         String action = req.getParameter("action");
 
@@ -79,7 +78,7 @@ public class TransactionServlet extends HttpServlet {
                 try {
                     resp.getWriter().println("Unable to process your request.");
                 } catch (IOException ioEx) {
-                    AppLogger.LOGGER.severe("Failed to write response: " + ioEx.getMessage());
+                    AppLogger.LOGGER.severe(WRITE_ERROR + ioEx.getMessage());
                 }
             }
 
