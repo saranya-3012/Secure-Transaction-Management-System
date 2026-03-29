@@ -40,14 +40,14 @@ public class AuthService {
     public static String loginCustomer(String username, String password) throws SQLException {
 
         try {
-            Optional<Customer> customer = CustDAO.findByUsername(username);
+            Optional<Customer> customer = CustomerDAO.findByUsername(username);
 
             if (customer.isPresent()) {
                 String storedPassword = customer.get().getPassword();
                 String enteredPassword = PasswordHash.hashPassword(password);
 
                 if (enteredPassword.equals(storedPassword)) {
-                    CustDAO.findByUsername(username);
+                    CustomerDAO.findByUsername(username);
                     return username + " login Successfully!";
                 }
             }
