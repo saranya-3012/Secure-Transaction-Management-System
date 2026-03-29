@@ -5,7 +5,6 @@ import model.Transaction;
 import service.TransactionService;
 import util.AppLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
