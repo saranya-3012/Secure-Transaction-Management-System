@@ -61,10 +61,10 @@ public class TransactionServlet extends HttpServlet {
             try {
 
                 int accountId = (int) session.getAttribute("accountId");
-                int pageno = Integer.parseInt(req.getParameter("pageNo"));
-                
+                int pageNo = Integer.parseInt(req.getParameter("pageNo"));
+
                 List<Transaction> transactions =
-                        transactionDAO.findByAccountId(accountId, pageno);
+                        transactionDAO.findByAccountId(accountId, pageNo);
 
                 req.setAttribute("transactions", transactions);
                 AppLogger.LOGGER.severe("Transaction details viewed ");
@@ -75,7 +75,5 @@ public class TransactionServlet extends HttpServlet {
             }
 
         }
-
-
     }
 }
