@@ -1,8 +1,13 @@
 package util;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class PasswordHash {
+
+    private PasswordHash() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static String hashPassword(String password) {
     	
@@ -20,8 +25,8 @@ public class PasswordHash {
             return sb.toString();
 
         } 
-        catch (Exception e) {
-            throw new RuntimeException("Error hashing password");
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(String.format("Error hashing password %s", e));
         }
     }
 }
