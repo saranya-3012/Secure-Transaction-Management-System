@@ -8,9 +8,7 @@ public final class AccountNoGenerator {
 
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-	private AccountNoGenerator() {
-		throw new UnsupportedOperationException("Utility class");
-	}
+	private AccountNoGenerator() {}
 
 	public static String generateAccountNumber() {
 
