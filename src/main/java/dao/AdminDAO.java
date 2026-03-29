@@ -31,7 +31,7 @@ public class AdminDAO {
             }
         } catch (SQLException e) {
             throw new SQLException(e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
         return Optional.empty();
