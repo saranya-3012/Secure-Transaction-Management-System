@@ -30,4 +30,4 @@ jobs:
             -Dsonar.projectKey=saranya-3012_Secure-Transaction-Management-System \
             -Dsonar.organization=saranya-3012 \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SARANYA6 }}
