@@ -27,7 +27,7 @@ jobs:
       - name: SonarCloud Scan
         run: |
           mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=Secure-Transaction-Management-System \
+            -Dsonar.projectKey=secure-transaction-management-system \
             -Dsonar.organization=saranya-3012 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
