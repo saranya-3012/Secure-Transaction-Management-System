@@ -12,6 +12,7 @@ public class Customer {
 
     public Customer() {}
 
+    @SuppressWarnings("unused")
     public Customer(int customerId, String username, String password, String fullName, String email, String phone, String role) {
         this.customerId = customerId;
         this.username = username;
@@ -43,6 +44,7 @@ public class Customer {
         this.password = password;
     }
 
+    @SuppressWarnings("unused")
     public String getFullName() {
         return fullName;
     }
@@ -50,6 +52,7 @@ public class Customer {
         this.fullName = fullName;
     }
 
+    @SuppressWarnings("unused")
     public String getEmail() {
         return email;
     }
@@ -57,16 +60,20 @@ public class Customer {
         this.email = email;
     }
 
+    @SuppressWarnings("unused")
     public String getPhone() {
         return phone;
     }
+    @SuppressWarnings("unused")
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    @SuppressWarnings("unused")
     public String getRole() {
         return role;
     }
+    @SuppressWarnings("unused")
     public void setRole(String role) {
         this.role = role;
     }
