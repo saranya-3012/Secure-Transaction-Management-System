@@ -35,17 +35,20 @@ public class AccountServlet extends HttpServlet {
 
                 accountDAO.create(account);
                 resp.getWriter().println("Account Created Successfully");
-                AppLogger.LOGGER.info(String.format("New Account created with Account Number %s", accountNumber));
-            }
+                AppLogger.LOGGER.info("New Account created with Account Number {0}");            }
         }
         catch (NumberFormatException e) {
-            throw new ServletException("Invalid number format for customer ID or balance", e);
+            throw new ServletException("Failed to parse number. Please enter valid numeric values.", e);
         }
         catch (IOException e) {
-            throw new ServletException("I/O error while writing response", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println("Internal server error while processing request");
+            AppLogger.LOGGER.severe("IOException in AccountServlet: " + e.getMessage());
         }
         catch (SQLException e) {
-            throw new ServletException("Database error while creating account", e);
+            AppLogger.LOGGER.severe("Database error while creating account: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().println("Internal server error while creating account");
         }
     }
 
@@ -63,9 +66,11 @@ public class AccountServlet extends HttpServlet {
                 Account acc = (Account) AccountDAO.findByCustomerId(username);
                 resp.getWriter().println(acc);
             } catch (SQLException e) {
-                throw new ServletException(e);
+                AppLogger.LOGGER.severe("Database error: " + e.getMessage());
+                throw new ServletException("Unable to create account, contact support", e);
             } catch (IOException e) {
-                throw new IOException(e);
+                AppLogger.LOGGER.severe("I/O error: " + e.getMessage());
+                throw new ServletException("Server error occurred while writing response", e);
             } catch (Exception e) {
                 AppLogger.LOGGER.severe(String.format("Error while get Account: %s", e.getMessage()));            }
         }
