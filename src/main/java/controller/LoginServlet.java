@@ -1,7 +1,7 @@
 package controller;
 
 import dao.AdminDAO;
-import dao.CustDAO;
+import dao.CustomerDAO;
 import model.Admin;
 import model.Customer;
 import service.AuthService;
@@ -27,11 +27,11 @@ public class LoginServlet extends HttpServlet {
 
         try {
 
-            if (!Validation.isValidUsername(username)) {
+            if (Validation.isValidUsername(username)) {
                 resp.getWriter().println("Enter valid Username!");
             }
 
-            if (!Validation.isValidPassword(password)) {
+            if (Validation.isValidPassword(password)) {
                 resp.getWriter().println("Enter valid Password!");
             }
 
@@ -89,7 +89,7 @@ public class LoginServlet extends HttpServlet {
                 String login = AuthService.loginCustomer(username, password);
                 resp.getWriter().println(login);
 
-                Optional<Customer> getCustomerData = CustDAO.findByUsername(username);
+                Optional<Customer> getCustomerData = CustomerDAO.findByUsername(username);
 
                 if (getCustomerData.isPresent()) {
 
