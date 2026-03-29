@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 @WebServlet("/account")
 public class AccountServlet extends HttpServlet {
@@ -16,7 +17,7 @@ public class AccountServlet extends HttpServlet {
     private final AccountDAO accountDAO = new AccountDAO();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, NumberFormatException {
 
         String action = req.getParameter("action");
 
@@ -34,22 +35,22 @@ public class AccountServlet extends HttpServlet {
             try {
                 accountDAO.create(account);
                 resp.getWriter().println("Account Created Successfully");
-                AppLogger.LOGGER.info( " New Account created with Account Number " + accountno);
+                AppLogger.LOGGER.info(String.format("New Account created with Account Number %s", accountno));
             }
-            catch (ServletException e) {
+            catch (SQLException e) {
                 throw new ServletException(e);
             }
             catch (IOException e) {
                 throw new IOException(e);
             }
             catch (Exception e) {
-                AppLogger.LOGGER.severe("Error while creating new Account : " + e.getMessage());
+                AppLogger.LOGGER.severe((String.format("Error while creating new Account : %s ", e.getMessage())));
             }
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, NumberFormatException {
 
         String action = req.getParameter("action");
 
@@ -61,14 +62,14 @@ public class AccountServlet extends HttpServlet {
                 Account acc = (Account) AccountDAO.findByCustomerId(username);
                 resp.getWriter().println(acc);
             }
-            catch (ServletException e) {
+            catch (SQLException e) {
                 throw new ServletException(e);
             }
             catch (IOException e) {
                 throw new IOException(e);
             }
             catch (Exception e) {
-                AppLogger.LOGGER.severe("Error while get Account : " + e.getMessage());
+                AppLogger.LOGGER.severe((String.format("Error while get Account : " + e.getMessage())));
             }
         }
     }
