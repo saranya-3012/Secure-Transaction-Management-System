@@ -24,9 +24,9 @@ public class PasswordHash {
             }
             return sb.toString();
 
-        } 
+        }
         catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(String.format("Error hashing password %s", e));
+            throw new IllegalStateException("Error hashing password", e);
         }
     }
 }
