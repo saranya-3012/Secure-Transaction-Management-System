@@ -38,17 +38,14 @@ public class AccountServlet extends HttpServlet {
                 AppLogger.LOGGER.info(String.format("New Account created with Account Number %s", accountNumber));
             }
         }
-        catch (SQLException e) {
-            throw new ServletException(e);
+        catch (NumberFormatException e) {
+            throw new ServletException("Invalid number format for customer ID or balance", e);
         }
         catch (IOException e) {
-            throw new IOException(e);
+            throw new ServletException("I/O error while writing response", e);
         }
-        catch (NumberFormatException e) {
-            throw new NumberFormatException();
-        }
-        catch (Exception e) {
-            AppLogger.LOGGER.severe((String.format("Error while creating new Account : %s ", e.getMessage())));
+        catch (SQLException e) {
+            throw new ServletException("Database error while creating account", e);
         }
     }
 
@@ -70,8 +67,7 @@ public class AccountServlet extends HttpServlet {
             } catch (IOException e) {
                 throw new IOException(e);
             } catch (Exception e) {
-                AppLogger.LOGGER.severe((String.format("Error while get Account : " + e.getMessage())));
-            }
+                AppLogger.LOGGER.severe(String.format("Error while get Account: %s", e.getMessage()));            }
         }
     }
 }
