@@ -32,7 +32,7 @@ public class AdminDAO {
         } catch (SQLException e) {
             throw new SQLException(e);
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("Error occurred during transaction processing", e);
         }
         return Optional.empty();
     }
