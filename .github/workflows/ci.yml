@@ -8,25 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Clear Maven cache
+        run: rm -rf ~/.m2/repository
+
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: maven-${{ hashFiles('**/pom.xml') }}
+      - name: Build and test with Maven
+        run: mvn clean verify -U
 
       - name: SonarCloud Scan
         run: |
-          mvn clean verify sonar:sonar \
+          mvn sonar:sonar \
             -Dsonar.projectKey=saranya-3012_secure-transaction-management-system \
             -Dsonar.organization=saranya-3012 \
             -Dsonar.host.url=https://sonarcloud.io \
