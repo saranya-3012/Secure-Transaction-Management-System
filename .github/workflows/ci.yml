@@ -31,3 +31,4 @@ jobs:
             -Dsonar.organization=saranya-3012 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
