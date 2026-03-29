@@ -1,10 +1,10 @@
-# Secure Transaction Management System – Java Servlet & JDBC
+# Secure Transaction Management System 
 
 ## Description
 
-Secure Transaction Management System is a Java Servlet–based banking application designed to handle secure financial transactions between users and accounts. The system ensures data integrity, prevents unauthorized access, and maintains accurate transaction records. Users can perform fund transfers, view transaction history, and manage account details securely.
+Secure Transaction Management System is a banking application built with Java Servlets that enables secure financial transactions between users and their accounts. It maintains data integrity, prevents unauthorized access, and keeps precise records of all transactions. Users can transfer funds, check transaction history, and manage account information safely.
 
-The application uses MySQL for data storage and is packaged as a WAR file for deployment on an Apache Tomcat server. It demonstrates core Java web development concepts including Servlets, JDBC integration, authentication, and secure transaction processing.
+The system relies on MySQL for database storage and is deployed as a WAR file on an Apache Tomcat server, showcasing essential Java web development skills such as Servlets, JDBC integration, authentication, and secure transaction handling.
 
 ---
 
@@ -13,10 +13,10 @@ The application uses MySQL for data storage and is packaged as a WAR file for de
 * Secure user authentication with role-based access control
 * Create, update, and manage customer accounts
 * Perform secure fund transfers between accounts
-* Transaction validation to prevent overdrafts or unauthorized transfers
+* Transaction validation to prevent unauthorized transfers
 * View transaction history per account
 * Reusable JDBC database connection utility with proper exception handling
-* Password hashing and JWT token–based authentication for security
+* Password hashing for secure user authentication
 * Automated logging of all transactions
 
 ---
@@ -24,27 +24,27 @@ The application uses MySQL for data storage and is packaged as a WAR file for de
 ## Technologies Used
 
 * Java (Servlets)
+* Servlet Filters
 * JDBC
 * MySQL
 * Apache Tomcat
 * Maven
-* JWT Authentication
-* BCrypt Password Hashing
+* SHA-256 Password Hashing
 * HikariCP Connection Pooling
+* SonarQube
+* Postman
 
 ---
 
 ## Project Structure
-
-```
-src/
-├── controller/       # Servlets handling HTTP requests
-├── dao/              # Database operations using JDBC
-├── model/            # Entity classes
-├── service/          # Business logic (transaction validation, account management)
-├── util/             # JWT, password hashing, database connection utility
-├── database/         # SQL scripts / schema
-```
+ 
+* **controller**      – Handle HTTP requests and responses
+* **dao**             – Database operations using JDBC
+* **dbconfiguration** – SQL scripts / schema
+* **filter**          – Handles authentication and request validation
+* **model**           – Entity classes
+* **service**         – Business logic (transaction validation, account management)
+* **util**            – Helper classes for hashing, DB connection
 
 ---
 
@@ -52,10 +52,9 @@ src/
 
 ### User Authentication
 
-* Register user
-* Login user
-* Password hashing using BCrypt
-* JWT token generation and validation
+* User registration and login
+* Password hashing (SHA)
+* Input validation
 * Role-based access (admin/user)
 
 ---
@@ -72,7 +71,7 @@ src/
 
 * Create and manage bank accounts
 * View account details and balance
-* Prevent invalid transactions (e.g., overdraft)
+* Prevent invalid transactions
 
 ---
 
@@ -94,11 +93,11 @@ src/
 
 ## Business Rules
 
-* Minimum account balance: ₹1000
-* Transfers allowed only between valid active accounts
-* Transaction cannot exceed account balance
-* Only authenticated users can initiate transactions
-* Transaction logs are immutable for security
+* Each user must have a registered account to perform transactions  
+* Transactions can only be initiated by logged-in users  
+* Transfers must be between existing accounts in the system  
+* Transaction amount must be positive  
+* All transactions are recorded with timestamp for tracking  
 
 ---
 
@@ -109,13 +108,6 @@ src/
 ```
 POST /register
 POST /login
-```
-
-### Customer APIs
-
-```
-POST /customer
-GET /customer
 ```
 
 ### Account APIs
@@ -129,8 +121,7 @@ GET /account
 
 ```
 POST /transaction
-GET /transaction/{id}
-GET /user/{id}/transactions
+GET /transaction
 ```
 
 ---
@@ -141,8 +132,9 @@ GET /user/{id}/transactions
 
 ```json
 {
+  "adminId": 1
   "username": "saranya",
-  "password": "StrongPassword123"
+  "password": "Password@123"
 }
 ```
 
@@ -150,13 +142,12 @@ GET /user/{id}/transactions
 
 ```json
 {
-  "userId": 1,
-  "customerName": "Saranya",
-  "gender": "Female",
-  "phoneNo": "9876543210",
-  "email": "saranya@example.com",
-  "address": "Tuticorin",
-  "aadharNo": "123456789012"
+  "customerId": 1,
+  "username": "customer01",
+  "password": "Password@123",
+  "fullName": "Saranya",
+  "phone": "9876543210",
+  "email": "saranya@example.com"
 }
 ```
 
@@ -166,7 +157,8 @@ GET /user/{id}/transactions
 {
   "customerId": 1,
   "accountNumber": "ACC2001",
-  "initialBalance": 5000
+  "balance": 5000,
+  "accountType": "Savings"
 }
 ```
 
@@ -184,12 +176,17 @@ GET /user/{id}/transactions
 
 ## Transaction Logic
 
-1. Authenticate the user initiating the transfer
-2. Verify sender and receiver accounts exist and are active
-3. Check sufficient balance in sender account
-4. Deduct amount from sender and add to receiver account atomically
-5. Record transaction details with timestamp
-6. Respond with success/failure status
+1. User sends a transfer request after logging in
+2. System authenticates the user credentials and retrieves user identity
+3. Retrieve sender and receiver account details from the database
+4. Validate that both accounts exist and are eligible for transfer
+5. Ensure the sender’s account has sufficient balance for the requested amount
+6. Begin database transaction (atomic update)
+7. Deduct the transfer amount from the sender’s account
+8. Add the transfer amount to the receiver’s account
+9. Insert a transaction record into the transactions table with timestamp and status
+10. Commit the database changes if all operations succeed
+11. Return success or error response to the user
 
 ---
 
@@ -197,26 +194,20 @@ GET /user/{id}/transactions
 
 Tables:
 
-* **users** – Stores login credentials and roles
-* **customer** – Stores customer personal details
-* **account** – Stores account information, balances, and linked customer IDs
-* **transaction** – Logs all transactions with sender, receiver, amount, and timestamps
-
-Relationships:
-
-```
-User → Customer → Account → Transaction
-```
+- **Admin** – Represents bank employees who manage customer accounts and monitor transactions  
+- **Customer** – bank clients who own accounts  
+- **Account** – Holds customer funds and is linked to transactions  
+- **Transaction** – logs all fund transfers between accounts  
 
 ---
 
 ## Security Implementation
 
-* Password hashing using BCrypt
-* JWT token authentication for API requests
-* Secret key signing with expiration (30 minutes)
-* Role-based validation for sensitive operations
-* Server-side token verification to prevent unauthorized access
+* Password hashing using SHA-256 for secure storage  
+* Role-based access control for Admin (bank employee) and Customer  
+* Server-side validation of user credentials for authentication  
+* Input validation to prevent invalid or malicious data  
+* All sensitive operations restricted to authorized users only
 
 ---
 
@@ -234,32 +225,21 @@ User → Customer → Account → Transaction
 
 1. Clone the repository
 2. Setup MySQL database and import schema
-3. Update database credentials in `db.properties`
+3. Update database credentials in `application.properties`
 4. Build WAR file using Maven
 5. Deploy WAR in Apache Tomcat webapps folder
 6. Start Tomcat server and access endpoints
 
 ---
 
-## Purpose
+## Testing
 
-This project demonstrates:
-
-* Servlet-based web application architecture
-* Secure authentication and role-based access
-* JDBC database integration
-* Transaction validation and audit logging
-* Real-world secure banking transaction management
-
+* API testing with Postman  
+* Code quality analysis with SonarQube  
+* Manual testing of key functionalities: registration, account management, and fund transfers
 ---
 
-## License
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/be991728-214c-4997-8ee0-87c2e03f901a" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ad9c4592-abeb-4aa4-8b6a-c68c47bb3edc" />
 
-MIT License
 
----
-
-## Contact
-
-Saranya – [saranya@example.com](mailto:saranya@example.com)
-Project link: [https://github.com/saranya-3012/Secure-Transaction-Management-System](https://github.com/saranya-3012/Secure-Transaction-Management-System)
