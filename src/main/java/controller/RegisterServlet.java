@@ -1,6 +1,6 @@
 package controller;
 
-import dao.CustDAO;
+import dao.CustomerDAO;
 import util.AppLogger;
 import util.PasswordHash;
 
@@ -27,8 +27,8 @@ public class RegisterServlet extends HttpServlet {
 
             String hashedPassword = PasswordHash.hashPassword(password);
 
-            CustDAO custdao = new CustDAO();
-            custdao.register(username, hashedPassword, name, email, phone);
+            CustomerDAO customerDao = new CustomerDAO();
+            customerDao.register(username, hashedPassword, name, email, phone);
             resp.getWriter().println(name + " registered successfully");
             AppLogger.LOGGER.info(username + " registered successfully");
         }
