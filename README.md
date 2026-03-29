@@ -176,17 +176,11 @@ GET /transaction
 
 ## Transaction Logic
 
-1. User sends a transfer request after logging in
-2. System authenticates the user credentials and retrieves user identity
-3. Retrieve sender and receiver account details from the database
-4. Validate that both accounts exist and are eligible for transfer
-5. Ensure the sender’s account has sufficient balance for the requested amount
-6. Begin database transaction (atomic update)
-7. Deduct the transfer amount from the sender’s account
-8. Add the transfer amount to the receiver’s account
-9. Insert a transaction record into the transactions table with timestamp and status
-10. Commit the database changes if all operations succeed
-11. Return success or error response to the user
+1. Authenticate the user and validate session  
+2. Retrieve and verify sender and receiver account details  
+3. Check sender’s balance and ensure transfer amount is valid  
+4. Perform atomic database update: deduct from sender, add to receiver, and record transaction  
+5. Commit changes and return success or error response
 
 ---
 
