@@ -25,9 +25,11 @@ public class Account {
         this.createdAt = createdAt;
     }
 
+    @SuppressWarnings("unused")
     public int getAccountId() {
         return accountId;
     }
+    @SuppressWarnings("unused")
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
@@ -39,6 +41,7 @@ public class Account {
         this.customerId = customerId;
     }
 
+    @SuppressWarnings("unused")
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -56,13 +59,16 @@ public class Account {
     public String getAccountType() {
         return accountType;
     }
+    @SuppressWarnings("unused")
     public void setAccountType(String accountType) {
         this.accountType = accountType;
     }
 
+    @SuppressWarnings("unused")
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+    @SuppressWarnings("unused")
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
