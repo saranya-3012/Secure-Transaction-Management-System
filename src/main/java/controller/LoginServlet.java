@@ -28,14 +28,6 @@ public class LoginServlet extends HttpServlet {
 
         try {
 
-            if (Validation.isValidUsername(username)) {
-                resp.getWriter().println("Enter valid Username!");
-            }
-
-            if (Validation.isValidPassword(password)) {
-                resp.getWriter().println("Enter valid Password!");
-            }
-
             HttpSession session = req.getSession(true);
 
             if ("admin".equalsIgnoreCase(role)) {
