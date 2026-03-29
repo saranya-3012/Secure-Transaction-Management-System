@@ -64,7 +64,6 @@ public class Customer {
     public String getPhone() {
         return phone;
     }
-    @SuppressWarnings("unused")
     public void setPhone(String phone) {
         this.phone = phone;
     }
