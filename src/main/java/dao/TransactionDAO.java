@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class TransactionDAO {
 
@@ -22,7 +23,7 @@ public class TransactionDAO {
 
             con.setAutoCommit(false);
 
-            AppLogger.LOGGER.info(String.format("Transfer started: From %d To %d",fromAccountId, toAccountId));
+            AppLogger.LOGGER.log(Level.INFO, "Transfer started: From {0} To {1}", new Object[]{fromAccountId, toAccountId});
             try (
                     PreparedStatement senderPs = con.prepareStatement(senderSQL);
                     PreparedStatement receiverPs = con.prepareStatement(receiverSQL);
