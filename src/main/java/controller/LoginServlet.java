@@ -6,11 +6,11 @@ import model.Admin;
 import model.Customer;
 import service.AuthService;
 import util.AppLogger;
-import util.Validation;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import java.util.logging.Level;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -40,8 +40,7 @@ public class LoginServlet extends HttpServlet {
 
                 if (getAdminData.isPresent()) {
 
-                    AppLogger.LOGGER.info(String.format("%s logged as ADMIN", username));
-
+                    AppLogger.LOGGER.log(Level.INFO, "{0} logged as ADMIN", username);
                     session.setAttribute("userId", getAdminData.get().getAdminId());
                     session.setAttribute("role", "ADMIN");
 
@@ -68,8 +67,8 @@ public class LoginServlet extends HttpServlet {
                             resp.sendRedirect("/transfer?action=view");
                             break;
                         default:
-                            AppLogger.LOGGER.warning(String.format("Invalid menu option selected: %s", option));
-                            break;
+                            AppLogger.LOGGER.log(Level.WARNING,
+                                    "Invalid menu option selected: {0}", option);                            break;
                     }
                 } else {
                     resp.getWriter().println("Access Denied!");
@@ -86,7 +85,7 @@ public class LoginServlet extends HttpServlet {
 
                 if (getCustomerData.isPresent()) {
 
-                    AppLogger.LOGGER.info(String.format("%s logged as CUSTOMER", username));
+                    AppLogger.LOGGER.log(Level.INFO, "{0} logged as CUSTOMER", username);
 
                     session.setAttribute("userId", getCustomerData.get().getCustomerId());
                     session.setAttribute("role", "CUSTOMER");
