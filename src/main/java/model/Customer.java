@@ -12,17 +12,6 @@ public class Customer {
 
     public Customer() {}
 
-    @SuppressWarnings("unused")
-    public Customer(int customerId, String username, String password, String fullName, String email, String phone, String role) {
-        this.customerId = customerId;
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.email = email;
-        this.phone = phone;
-        this.role = role;
-    }
-
     public int getCustomerId() {
         return customerId;
     }
@@ -76,5 +65,6 @@ public class Customer {
     public void setRole(String role) {
         this.role = role;
     }
+
 
 }
