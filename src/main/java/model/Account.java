@@ -63,13 +63,4 @@ public class Account {
     public void setAccountType(String accountType) {
         this.accountType = accountType;
     }
-
-    @SuppressWarnings("unused")
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    @SuppressWarnings("unused")
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
