@@ -10,8 +10,6 @@ public class Admin {
     private String role;
     private LocalDateTime createdAt;
 
-    public Admin() {}
-
     public int getAdminId() {
         return adminId;
     }
@@ -33,13 +31,16 @@ public class Admin {
         this.password = password;
     }
 
+    @SuppressWarnings("unused")
     public String getRole() {
         return role;
     }
+    @SuppressWarnings("unused")
     public void setRole(String role) {
         this.role = role;
     }
 
+    @SuppressWarnings("unused")
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
