@@ -39,7 +39,7 @@ public class CustomerDAO {
 
             if (rs.next()) {
                         Customer customer = new Customer();
-                        customer.setCustomerId(rs.getInt("customerId"));
+                        customer.setCustomerId(rs.getInt("customer_Id"));
                         customer.setUsername(rs.getString("username"));
                         customer.setPassword(rs.getString("password"));
                         customer.setFullName(rs.getString("full_name"));
