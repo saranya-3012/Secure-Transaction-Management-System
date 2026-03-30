@@ -33,8 +33,7 @@ public class Transaction {
     public void setTransactionId(int transactionId) {
         this.transactionId = transactionId;
     }
-
-    @SuppressWarnings("unused")
+    
     public int getAccountId() {
         return accountId;
     }
@@ -42,8 +41,7 @@ public class Transaction {
     public void setAccountId(int accountId) {
         this.accountId = accountId;
     }
-
-    @SuppressWarnings("unused")
+    
     public BigDecimal getAmount() {
         return amount;
     }
@@ -51,8 +49,7 @@ public class Transaction {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-
-    @SuppressWarnings("unused")
+    
     public String getType() {
         return type;
     }
@@ -61,7 +58,6 @@ public class Transaction {
         this.type = type;
     }
 
-    @SuppressWarnings("unused")
     public BigDecimal getTotalAmount() {
         return totalamount;
     }
