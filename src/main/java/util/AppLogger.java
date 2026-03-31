@@ -7,10 +7,6 @@ import java.util.logging.SimpleFormatter;
 
 public class AppLogger {
 
-    private AppLogger() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
-    }
-
     public static final Logger LOGGER = Logger.getLogger(AppLogger.class.getName());
 
     static {
