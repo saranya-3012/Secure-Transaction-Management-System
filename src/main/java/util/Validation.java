@@ -4,10 +4,6 @@ import java.util.regex.Pattern;
 
 public final class Validation {
 
-	private Validation(){
-		throw new UnsupportedOperationException("Utility class");
-	}
-
 	   private static final String USERNAME = "^[a-z0-9_]{5,15}$";
 
 	   private static final String EMAIL = "^[a-z0-9_.-]+@[a-z.-]+$";
