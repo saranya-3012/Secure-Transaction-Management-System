@@ -12,10 +12,6 @@ public class AuthService {
 
     private static final AdminDAO adminDAO = new AdminDAO();
 
-    private AuthService() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
-    }
-
     public static String loginAdmin(String username, String password) throws SQLException {
 
         try {
