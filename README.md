@@ -8,7 +8,7 @@ The system relies on MySQL for database storage and is deployed as a WAR file on
 
 ```mermaid
 graph TD
-A[Admin Login] --> B[Create Customer & Account]
+A[Admin Login] --> B[Create Customer Account]
 B --> C[Transfer Money]
 C --> D[Transaction Recorded]
 
