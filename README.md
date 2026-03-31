@@ -8,15 +8,13 @@ The system relies on MySQL for database storage and is deployed as a WAR file on
 
 ```mermaid
 graph TD
-A[User Registration] --> B[User Login]
-B -->|Valid Credentials| C[Create Account]
-B -->|Invalid Credentials| F[Show Error]
+A[Admin Login] --> B[Create Customer & Account]
+B --> C[Transfer Money]
+C --> D[Transaction Recorded]
 
-C --> D[Transfer Money]
-D -->|Sufficient Balance| E[Transaction Successful]
-D -->|Insufficient Balance| G[Show Error]
-
-E --> H[View Transaction History]
+E[Customer Login] --> F[View Account]
+F --> G[View Transactions]
+D --> G
 ```
 ---
 
