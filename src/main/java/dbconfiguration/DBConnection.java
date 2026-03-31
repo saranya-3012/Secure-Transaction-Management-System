@@ -11,10 +11,6 @@ import java.util.Properties;
 public class DBConnection {
 
     private static final HikariDataSource dataSource;
-
-    private DBConnection() {
-		throw new UnsupportedOperationException("Utility class");
-	}
     
     static {
         try {
