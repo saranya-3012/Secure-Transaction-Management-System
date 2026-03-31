@@ -10,22 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repo
       - name: Checkout repo
         uses: actions/checkout@v3
-
-      # Step 2: Fetch full Git history for proper SonarCloud blame info
+        
       - name: Fetch full Git history
         run: git fetch --unshallow || echo "Already full clone"
 
-      # Step 3: Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Step 4: Cache Maven dependencies for faster builds
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -34,11 +30,9 @@ jobs:
           restore-keys: |
             maven-
 
-      # Step 5: Build and test project
       - name: Build and test with Maven
         run: mvn clean verify -U
 
-      # Step 6: SonarCloud scan (non-blocking if it fails)
       - name: SonarCloud Scan
         run: |
           mvn sonar:sonar \
