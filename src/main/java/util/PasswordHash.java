@@ -5,10 +5,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class PasswordHash {
 
-    private PasswordHash() {
-        throw new UnsupportedOperationException("Utility class");
-    }
-
     public static String hashPassword(String password) {
     	
         try {
