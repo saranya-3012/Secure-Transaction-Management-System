@@ -6,6 +6,7 @@ Secure Transaction Management System is a banking application built with Java Se
 
 The system relies on MySQL for database storage and is deployed as a WAR file on an Apache Tomcat server, showcasing essential Java web development skills such as Servlets, JDBC integration, authentication, and secure transaction handling.
 
+```mermaid
 graph TD
 A[User Registration] --> B[User Login]
 B -->|Valid Credentials| C[Create Account]
@@ -16,7 +17,7 @@ D -->|Sufficient Balance| E[Transaction Successful]
 D -->|Insufficient Balance| G[Show Error]
 
 E --> H[View Transaction History]
-
+```
 ---
 
 ## Features
