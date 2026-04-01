@@ -1,4 +1,4 @@
-# Secure Transaction Management System 
+# Banking Transaction System 
 
 ## Description
 
